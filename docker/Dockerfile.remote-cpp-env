@@ -1,0 +1,81 @@
+# CLion remote docker environment (How to build docker container, run and stop it)
+#
+# Build and run:
+#   docker build -t clion/remote-cpp-env:0.5 -f Dockerfile.remote-cpp-env .
+#   docker run -d --cap-add sys_ptrace -p127.0.0.1:2233:22 --name clion_remote_env clion/remote-cpp-env:0.5
+#   ssh-keygen -f "$HOME/.ssh/known_hosts" -R "[localhost]:2233" 
+#
+# ssh credentials (test user):
+#   ssh user@localhost -p 2233
+#
+# stop:
+#   docker stop clion_remote_env
+# remove:
+#   docker rm clion_remote_env
+# 
+
+FROM ubuntu:18.04
+
+MAINTAINER magicgriffin <maijing3007@qq.com>
+
+# use domestic "apt" source
+RUN sed -i 's/http:\/\/archive\.ubuntu\.com\/ubuntu\//http:\/\/mirrors\.tuna\.tsinghua\.edu\.cn\/ubuntu\//g' /etc/apt/sources.list \
+    && sed -i 's/http:\/\/security\.ubuntu\.com\/ubuntu\//http:\/\/mirrors\.tuna\.tsinghua\.edu\.cn\/ubuntu\//g' /etc/apt/sources.list
+
+RUN apt-get update \
+  && apt-get install -y ssh \
+      build-essential \
+      gcc \
+      g++ \
+      gdb \
+      clang \
+      cmake \
+      rsync \
+      tar \
+      python \
+      vim \
+      htop \
+      tmux \
+      sudo \
+      zsh \
+      git \
+      nano \
+  && apt-get clean
+
+RUN apt-get -y install \
+    curl \
+    wget
+
+RUN ( \
+    echo 'LogLevel DEBUG2'; \
+    echo 'PermitRootLogin yes'; \
+    echo 'PasswordAuthentication yes'; \
+    echo 'Subsystem sftp /usr/lib/openssh/sftp-server'; \
+  ) > /etc/ssh/sshd_config_test_clion \
+  && mkdir /run/sshd
+
+# use "bash" shell for root
+RUN chsh -s /bin/bash
+
+RUN useradd -m user -s /bin/bash \
+  && yes "magicgriffin" | passwd user \
+  && adduser user sudo
+
+USER user
+
+# Install Oh my Zsh
+# download script online
+# RUN sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" \
+#     && sed -i -- 's/robbyrussell/ys/g' /home/user/.zshrc
+# use downloaded script
+#COPY ./install-oh-my-zsh.sh /home/user
+#RUN sh /home/user/install-oh-my-zsh.sh \
+#    && sed -i -- 's/robbyrussell/ys/g' /home/user/.zshrc
+
+USER root
+
+RUN apt-get -y install \
+    bison \
+    flex
+
+CMD ["/usr/sbin/sshd", "-D", "-e", "-f", "/etc/ssh/sshd_config_test_clion"]
