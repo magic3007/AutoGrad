@@ -545,6 +545,7 @@ enum class BinaryOpType : uint8_t {
     Sub,
     Mul,
     Div,
+    IntDiv,
     Mod,
     And,
     Or,
