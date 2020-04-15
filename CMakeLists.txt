@@ -2,6 +2,11 @@ cmake_minimum_required(VERSION 3.0)
 project(boost C CXX)
 set(LIB_NAME boost)
 
+message(STATUS "PROJECT_SOURCE_DIR: ${PROJECT_SOURCE_DIR}")
+message(STATUS "PROJECT_BINARY_DIR: ${PROJECT_BINARY_DIR}")
+set(CMAKE_VERBOSE_MAKEFILE  on)
+set(CMAKE_EXPORT_COMPILE_COMMANDS on)
+
 # include directories
 include_directories(${CMAKE_INCLUDE_PATH})
 include_directories("include")
