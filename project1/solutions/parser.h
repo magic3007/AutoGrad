@@ -1,4 +1,5 @@
 #ifndef BOOST_PARSER_H
+#define BOOST_PARSER_H
 #include <stdio.h>
 #include "IR.h"
 
@@ -25,6 +26,5 @@ Boost::Internal::Group ParseFromFile(const char *filename){
 
 }
 
-#define BOOST_PARSER_H
 
 #endif // BOOST_PARSER_H
