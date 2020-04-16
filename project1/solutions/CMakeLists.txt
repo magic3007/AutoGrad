@@ -16,6 +16,7 @@ MACRO(lex_config target_name _filename)
     FLEX_TARGET(${target_name} ${_filename} ${CMAKE_CURRENT_BINARY_DIR}/${_basename}.cc
             DEFINES_FILE  ${CMAKE_CURRENT_BINARY_DIR}/${_basename}.h)
 ENDMACRO()
+
 # Another script: Credit to https://cmake.org/pipermail/cmake/2007-July/015398.html
 
 # =====================================================================================
@@ -24,6 +25,8 @@ function(add_executable_config TARGETNAME)
     # TODO: consider check_and_add_compiler_option()
     target_compile_options(${TARGETNAME} PRIVATE
         -Wall -Wextra -Werror
+            -Wno-unused-parameter
+            -Wno-unused-function
         )
 #    Cmake 3.17 or later
 #    target_link_directories(${TARGETNAME}
@@ -37,6 +40,8 @@ function(add_library_config TARGETNAME)
     # TODO: consider check_and_add_compiler_option()
     target_compile_options(${TARGETNAME} PRIVATE
         -Wall -Wextra -Werror
+            -Wno-unused-parameter
+            -Wno-unused-function
         )
 #    Cmake 3.17 or later
 #    target_link_directories(${TARGETNAME}
@@ -60,9 +65,10 @@ lex_config(FlexTarget token.l)
 ADD_FLEX_BISON_DEPENDENCY(FlexTarget BisonTarget)
 
 add_library(parser  STATIC
-        parser.h ${BISON_BisonTarget_OUTPUTS} ${FLEX_FlexTarget_OUTPUTS}
+        parser.h  ${FLEX_FlexTarget_OUTPUTS} ${BISON_BisonTarget_OUTPUTS}
         )
 add_library_config(parser)
+target_link_libraries(parser ${LIB_NAME})
 
 ### test_main
 

@@ -3,12 +3,11 @@
 #include <stdio.h>
 #include "IR.h"
 
-namespace parser{
-
-extern Boost::Internal::Group root;
-
 extern int yyparse();
 extern void set_yyparse_file_ptr(FILE *file_ptr);
+extern Boost::Internal::Group root;
+
+namespace parser{
 
 Boost::Internal::Group ParseFromStdin(){
   set_yyparse_file_ptr(stdin);

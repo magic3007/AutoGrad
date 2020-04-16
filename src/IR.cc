@@ -212,7 +212,6 @@ void Kernel::visit_node(IRVisitor *visitor) const {
     return visitor->visit(Ref<const Kernel>(shared_from_this()));
 }
 
-
 }  // namespace Internal
 
 }  // namespace Boost

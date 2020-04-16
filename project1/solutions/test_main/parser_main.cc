@@ -1,5 +1,7 @@
 #include "../parser.h"
 #include "IR.h"
+#include "IRVisitor.h"
+#include "IRMutator.h"
 #include "IRPrinter.h"
 
 using namespace Boost::Internal;

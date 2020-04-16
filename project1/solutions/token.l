@@ -2,10 +2,11 @@
 #include <stdio.h>
 #include <string>
 #include "IR.h"
+using namespace Boost::Internal;
 #include "grammar.h"
 
 /* Put value onto Bison stack. */
-#define SAVE_TOKEN yylval.string = yytext
+#define SAVE_TOKEN  yylval.string = new std::string(yytext)
 #define TOKEN(t)    (yylval.token = t)
 
 static FILE *yyparse_file_ptr;
