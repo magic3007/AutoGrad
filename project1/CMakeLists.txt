@@ -2,7 +2,7 @@ add_subdirectory(solutions)
 
 file(GLOB test_src "*.cc")
 file(GLOB kernel_src "./kernels/*.cc")
-file(GLOB solution_src "./solutions/*.cc")
+file(GLOB solution_src "./solutions/example_solution.cc")
 file(GLOB clean_src "./clean/*.cc")
 
 include_directories("../include")
