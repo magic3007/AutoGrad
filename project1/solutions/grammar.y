@@ -17,6 +17,8 @@ void yyerror(const char* msg){
 using std::vector;
 using std::string;
 
+// Credit to https://www.gnu.org/software/bison/manual/html_node/Enabling-Traces.html
+#define YYDEBUG 1
 %}
 
 
@@ -45,7 +47,7 @@ using std::string;
 %token <string> TIDENTIFIER TINTEGER TFLOAT
 %token <token>  TSEMICOLON TCOMMA
 %token <token>  TEQUAL
-%token <token>  TLBRACKET TRBRACKET TCLT TCGT
+%token <token>  TLBRACKET TRBRACKET TCLT TCGT TLPAREN TRPAREN
 %token <token>  TPLUS TMINUS TMUL TDIV TINTDIV TMOD
 
 /*
@@ -147,6 +149,10 @@ Rhs
             delete $1;
             delete $3;
         }
+    | TLPAREN Rhs TRPAREN
+    	{
+    	    $$ = $2;
+    	}
     | TRef
         {
             $$ = $1;
