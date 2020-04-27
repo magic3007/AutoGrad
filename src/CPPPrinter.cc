@@ -23,24 +23,24 @@ std::string CPPPrinter::print(const Group &group) {
 
     group.visit_group(this);
 
-    for (std::string i : indices) {
-        prefix_indent();
-        prefix << "for (int " << i << " = 0; " << i << " < " << ranges[i]
-               << "; ++i) {\n";
-        enter();
-    }
-    std::cout << prefix.str();
+    // for (std::string i : indices) {
+    //     prefix_indent();
+    //     prefix << "for (int " << i << " = 0; " << i << " < " << ranges[i]
+    //            << "; ++i) {\n";
+    //     enter();
+    // }
+    // std::cout << prefix.str();
 
-    std::string indent_string = "";
-    for (int i = 0; i < indent; ++i) indent_string.append(" ");
-    for (std::string s : statements) std::cout << indent_string << s;
+    // std::string indent_string = "";
+    // for (int i = 0; i < indent; ++i) indent_string.append(" ");
+    // for (std::string s : statements) std::cout << indent_string << s;
 
-    while (indent) {
-        exit();
-        suffix_indent();
-        suffix << "}\n";
-    }
-    std::cout << suffix.str();
+    // while (indent) {
+    //     exit();
+    //     suffix_indent();
+    //     suffix << "}\n";
+    // }
+    // std::cout << suffix.str();
     return "";
 }
 
@@ -111,12 +111,33 @@ void CPPPrinter::visit(Ref<const Var> op, int argu) {
 }
 
 void CPPPrinter::visit(Ref<const Move> op) {
+    oss.str("");
+    prefix.str("");
+    suffix.str("");
+    ranges.clear();
+    indices.clear();
     (op->dst).visit_expr(this);
     oss << " = ";
     (op->src).visit_expr(this);
     oss << ";\n";
-    statements.push_back(std::string(oss.str()));
-    oss.str("");
+
+    for (std::string i : indices) {
+        prefix_indent();
+        prefix << "for (int " << i << " = 0; " << i << " < " << ranges[i]
+               << "; ++i) {\n";
+        enter();
+    }
+    prefix_indent();
+    std::cout << prefix.str();
+    
+    std::cout << oss.str();
+
+    while (indent) {
+        exit();
+        suffix_indent();
+        suffix << "}\n";
+    }
+    std::cout << suffix.str();
 }
 
 void CPPPrinter::visit(Ref<const Kernel> op) {
