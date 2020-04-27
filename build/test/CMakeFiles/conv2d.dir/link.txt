@@ -1,1 +1,0 @@
-/usr/bin/c++  -std=c++11 -O2 -Wall -fPIC   -rdynamic CMakeFiles/conv2d.dir/conv2d.cc.o  -o conv2d -Wl,-rpath,/home/sucan/Desktop/Compiler/build ../libboost.so -ldl 

@@ -1,5 +1,0 @@
-# Hashes of file build rules.
-7721371c23e3e963d516a87b59ee7d42 project1/CMakeFiles/clean_run
-e201b829093e930e83f06801009fa85f project1/CMakeFiles/solution_run
-7552dc708c183c0dda2ad9c78a789f50 project1/solutions/grammar.cc
-0e4c1f904d5132079744b5fd19c9573b project1/solutions/token.cc

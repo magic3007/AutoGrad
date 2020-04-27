@@ -1,1 +1,0 @@
-/usr/bin/c++  -std=c++11 -O2 -Wall -fPIC   -rdynamic CMakeFiles/parser_main.dir/test_main/parser_main.cc.o  -o ../../bin/parser_main -Wl,-rpath,/home/sucan/Desktop/Compiler/build libparser.a ../../libboost.so -ldl 

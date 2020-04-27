@@ -1,1 +1,0 @@
-/usr/bin/c++  -std=c++11 -O2 -Wall -fPIC   -rdynamic CMakeFiles/gemm.dir/gemm.cc.o  -o gemm -Wl,-rpath,/home/sucan/Desktop/Compiler/build ../libboost.so -ldl 

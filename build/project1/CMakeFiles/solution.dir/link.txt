@@ -1,1 +1,0 @@
-/usr/bin/c++  -std=c++11 -O2 -Wall -fPIC   -rdynamic CMakeFiles/solution.dir/solutions/example_solution.cc.o  -o solution -Wl,-rpath,/home/sucan/Desktop/Compiler/build ../libboost.so -ldl 

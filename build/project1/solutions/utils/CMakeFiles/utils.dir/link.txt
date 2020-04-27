@@ -1,2 +1,0 @@
-/usr/bin/ar qc libutils.a  CMakeFiles/utils.dir/argument_parser.cpp.o CMakeFiles/utils.dir/logging.cpp.o
-/usr/bin/ranlib libutils.a
