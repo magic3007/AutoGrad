@@ -114,7 +114,7 @@ void CPPPrinter::visit(Ref<const Move> op) {
     (op->dst).visit_expr(this);
     oss << " = ";
     (op->src).visit_expr(this);
-    oss << "\n";
+    oss << ";\n";
     statements.push_back(std::string(oss.str()));
     oss.str("");
 }

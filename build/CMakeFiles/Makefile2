@@ -401,17 +401,19 @@ clean: project1/CMakeFiles/cleanf.dir/clean
 # Convenience name for "all" pass in the directory.
 project1/solutions/all: project1/solutions/CMakeFiles/parser.dir/all
 project1/solutions/all: project1/solutions/CMakeFiles/parser_main.dir/all
+project1/solutions/all: project1/solutions/utils/all
 
 .PHONY : project1/solutions/all
 
 # Convenience name for "clean" pass in the directory.
 project1/solutions/clean: project1/solutions/CMakeFiles/parser.dir/clean
 project1/solutions/clean: project1/solutions/CMakeFiles/parser_main.dir/clean
+project1/solutions/clean: project1/solutions/utils/clean
 
 .PHONY : project1/solutions/clean
 
 # Convenience name for "preinstall" pass in the directory.
-project1/solutions/preinstall:
+project1/solutions/preinstall: project1/solutions/utils/preinstall
 
 .PHONY : project1/solutions/preinstall
 
@@ -487,6 +489,61 @@ project1/solutions/CMakeFiles/parser_main.dir/clean:
 
 # clean rule for target.
 clean: project1/solutions/CMakeFiles/parser_main.dir/clean
+
+.PHONY : clean
+
+#=============================================================================
+# Directory level rules for directory project1/solutions/utils
+
+# Convenience name for "all" pass in the directory.
+project1/solutions/utils/all: project1/solutions/utils/CMakeFiles/utils.dir/all
+
+.PHONY : project1/solutions/utils/all
+
+# Convenience name for "clean" pass in the directory.
+project1/solutions/utils/clean: project1/solutions/utils/CMakeFiles/utils.dir/clean
+
+.PHONY : project1/solutions/utils/clean
+
+# Convenience name for "preinstall" pass in the directory.
+project1/solutions/utils/preinstall:
+
+.PHONY : project1/solutions/utils/preinstall
+
+#=============================================================================
+# Target rules for target project1/solutions/utils/CMakeFiles/utils.dir
+
+# All Build rule for target.
+project1/solutions/utils/CMakeFiles/utils.dir/all:
+	$(MAKE) -f project1/solutions/utils/CMakeFiles/utils.dir/build.make project1/solutions/utils/CMakeFiles/utils.dir/depend
+	$(MAKE) -f project1/solutions/utils/CMakeFiles/utils.dir/build.make project1/solutions/utils/CMakeFiles/utils.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/sucan/Desktop/Compiler/build/CMakeFiles --progress-num=33,34,35 "Built target utils"
+.PHONY : project1/solutions/utils/CMakeFiles/utils.dir/all
+
+# Include target in all.
+all: project1/solutions/utils/CMakeFiles/utils.dir/all
+
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+project1/solutions/utils/CMakeFiles/utils.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/sucan/Desktop/Compiler/build/CMakeFiles 3
+	$(MAKE) -f CMakeFiles/Makefile2 project1/solutions/utils/CMakeFiles/utils.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/sucan/Desktop/Compiler/build/CMakeFiles 0
+.PHONY : project1/solutions/utils/CMakeFiles/utils.dir/rule
+
+# Convenience name for target.
+utils: project1/solutions/utils/CMakeFiles/utils.dir/rule
+
+.PHONY : utils
+
+# clean rule for target.
+project1/solutions/utils/CMakeFiles/utils.dir/clean:
+	$(MAKE) -f project1/solutions/utils/CMakeFiles/utils.dir/build.make project1/solutions/utils/CMakeFiles/utils.dir/clean
+.PHONY : project1/solutions/utils/CMakeFiles/utils.dir/clean
+
+# clean rule for target.
+clean: project1/solutions/utils/CMakeFiles/utils.dir/clean
 
 .PHONY : clean
 

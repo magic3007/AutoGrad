@@ -98,5 +98,15 @@
   "directory": "/home/sucan/Desktop/Compiler/build/project1/solutions",
   "command": "/usr/bin/c++   -I/home/sucan/Desktop/Compiler/include -I/home/sucan/Desktop/Compiler/build/lib  -std=c++11 -O2 -Wall -fPIC    -Wall -Wextra -Werror -Wno-unused-parameter -Wno-unused-function -o CMakeFiles/parser_main.dir/test_main/parser_main.cc.o -c /home/sucan/Desktop/Compiler/project1/solutions/test_main/parser_main.cc",
   "file": "/home/sucan/Desktop/Compiler/project1/solutions/test_main/parser_main.cc"
+},
+{
+  "directory": "/home/sucan/Desktop/Compiler/build/project1/solutions/utils",
+  "command": "/usr/bin/c++   -I/home/sucan/Desktop/Compiler/include  -std=c++11 -O2 -Wall -fPIC    -Wall -Wextra -Werror -Wno-unused-parameter -Wno-unused-function -o CMakeFiles/utils.dir/argument_parser.cpp.o -c /home/sucan/Desktop/Compiler/project1/solutions/utils/argument_parser.cpp",
+  "file": "/home/sucan/Desktop/Compiler/project1/solutions/utils/argument_parser.cpp"
+},
+{
+  "directory": "/home/sucan/Desktop/Compiler/build/project1/solutions/utils",
+  "command": "/usr/bin/c++   -I/home/sucan/Desktop/Compiler/include  -std=c++11 -O2 -Wall -fPIC    -Wall -Wextra -Werror -Wno-unused-parameter -Wno-unused-function -o CMakeFiles/utils.dir/logging.cpp.o -c /home/sucan/Desktop/Compiler/project1/solutions/utils/logging.cpp",
+  "file": "/home/sucan/Desktop/Compiler/project1/solutions/utils/logging.cpp"
 }
 ]

@@ -16,3 +16,6 @@
 /home/sucan/Desktop/Compiler/build/project1/solutions/CMakeFiles/parser.dir
 /home/sucan/Desktop/Compiler/build/project1/solutions/CMakeFiles/rebuild_cache.dir
 /home/sucan/Desktop/Compiler/build/project1/solutions/CMakeFiles/parser_main.dir
+/home/sucan/Desktop/Compiler/build/project1/solutions/utils/CMakeFiles/rebuild_cache.dir
+/home/sucan/Desktop/Compiler/build/project1/solutions/utils/CMakeFiles/utils.dir
+/home/sucan/Desktop/Compiler/build/project1/solutions/utils/CMakeFiles/edit_cache.dir

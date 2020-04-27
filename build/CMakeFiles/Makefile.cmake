@@ -13,6 +13,7 @@ set(CMAKE_MAKEFILE_DEPENDS
   "CMakeFiles/3.10.2/CMakeSystem.cmake"
   "../project1/CMakeLists.txt"
   "../project1/solutions/CMakeLists.txt"
+  "../project1/solutions/utils/CMakeLists.txt"
   "../test/CMakeLists.txt"
   "/usr/share/cmake-3.10/Modules/CMakeCInformation.cmake"
   "/usr/share/cmake-3.10/Modules/CMakeCXXInformation.cmake"
@@ -54,6 +55,7 @@ set(CMAKE_MAKEFILE_PRODUCTS
   "test/CMakeFiles/CMakeDirectoryInformation.cmake"
   "project1/CMakeFiles/CMakeDirectoryInformation.cmake"
   "project1/solutions/CMakeFiles/CMakeDirectoryInformation.cmake"
+  "project1/solutions/utils/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
@@ -68,4 +70,5 @@ set(CMAKE_DEPEND_INFO_FILES
   "project1/CMakeFiles/cleanf.dir/DependInfo.cmake"
   "project1/solutions/CMakeFiles/parser.dir/DependInfo.cmake"
   "project1/solutions/CMakeFiles/parser_main.dir/DependInfo.cmake"
+  "project1/solutions/utils/CMakeFiles/utils.dir/DependInfo.cmake"
   )

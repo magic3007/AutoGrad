@@ -243,6 +243,19 @@ parser_main/fast:
 	$(MAKE) -f project1/solutions/CMakeFiles/parser_main.dir/build.make project1/solutions/CMakeFiles/parser_main.dir/build
 .PHONY : parser_main/fast
 
+#=============================================================================
+# Target rules for targets named utils
+
+# Build rule for target.
+utils: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 utils
+.PHONY : utils
+
+# fast build rule for target.
+utils/fast:
+	$(MAKE) -f project1/solutions/utils/CMakeFiles/utils.dir/build.make project1/solutions/utils/CMakeFiles/utils.dir/build
+.PHONY : utils/fast
+
 src/CPPPrinter.o: src/CPPPrinter.cc.o
 
 .PHONY : src/CPPPrinter.o
@@ -396,6 +409,7 @@ help:
 	@echo "... cleanf"
 	@echo "... parser"
 	@echo "... parser_main"
+	@echo "... utils"
 	@echo "... src/CPPPrinter.o"
 	@echo "... src/CPPPrinter.i"
 	@echo "... src/CPPPrinter.s"
