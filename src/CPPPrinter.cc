@@ -20,27 +20,7 @@ std::string CPPPrinter::print(const Group &group) {
     oss.clear();
     prefix.clear();
     suffix.clear();
-
     group.visit_group(this);
-
-    // for (std::string i : indices) {
-    //     prefix_indent();
-    //     prefix << "for (int " << i << " = 0; " << i << " < " << ranges[i]
-    //            << "; ++i) {\n";
-    //     enter();
-    // }
-    // std::cout << prefix.str();
-
-    // std::string indent_string = "";
-    // for (int i = 0; i < indent; ++i) indent_string.append(" ");
-    // for (std::string s : statements) std::cout << indent_string << s;
-
-    // while (indent) {
-    //     exit();
-    //     suffix_indent();
-    //     suffix << "}\n";
-    // }
-    // std::cout << suffix.str();
     return "";
 }
 
