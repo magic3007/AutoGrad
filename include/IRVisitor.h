@@ -1,6 +1,6 @@
 /*
  * MIT License
- * 
+ *
  * Copyright (c) 2020 Size Zheng
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -9,10 +9,11 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- 
- * The above copyright notice and this permission notice shall be included in all
+
+ * The above copyright notice and this permission notice shall be included in
+ all
  * copies or substantial portions of the Software.
- 
+
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -27,13 +28,12 @@
 
 #include "IR.h"
 
-
 namespace Boost {
 
 namespace Internal {
 
 class IRVisitor {
- public:
+   public:
     virtual void visit(Ref<const IntImm>);
     virtual void visit(Ref<const UIntImm>);
     virtual void visit(Ref<const FloatImm>);
@@ -52,12 +52,16 @@ class IRVisitor {
     virtual void visit(Ref<const IfThenElse>);
     virtual void visit(Ref<const Move>);
     virtual void visit(Ref<const Kernel>);
- private:
+
+    virtual void visit(Ref<const IntImm>, int);
+    virtual void visit(Ref<const Binary>, int);
+    virtual void visit(Ref<const Var>, int);
+
+   private:
 };
 
 }  // namespace Internal
 
 }  // namespace Boost
-
 
 #endif  // BOOST_IRVISITOR_H

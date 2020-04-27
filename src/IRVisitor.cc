@@ -151,7 +151,11 @@ void IRVisitor::visit(Ref<const Kernel> op) {
     return;
 }
 
+void IRVisitor::visit(Ref<const IntImm> op, int argu) { visit(op); }
 
+void IRVisitor::visit(Ref<const Binary> op, int argu) { visit(op); }
+
+void IRVisitor::visit(Ref<const Var> op, int argu) { visit(op); }
 
 }  // namespace Internal
 

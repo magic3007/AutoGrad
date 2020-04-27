@@ -1,0 +1,102 @@
+[
+{
+  "directory": "/home/sucan/Desktop/Compiler/build",
+  "command": "/usr/bin/c++  -Dboost_EXPORTS -I/home/sucan/Desktop/Compiler/include  -std=c++11 -O2 -Wall -fPIC  -fPIC   -o CMakeFiles/boost.dir/src/CPPPrinter.cc.o -c /home/sucan/Desktop/Compiler/src/CPPPrinter.cc",
+  "file": "/home/sucan/Desktop/Compiler/src/CPPPrinter.cc"
+},
+{
+  "directory": "/home/sucan/Desktop/Compiler/build",
+  "command": "/usr/bin/c++  -Dboost_EXPORTS -I/home/sucan/Desktop/Compiler/include  -std=c++11 -O2 -Wall -fPIC  -fPIC   -o CMakeFiles/boost.dir/src/IR.cc.o -c /home/sucan/Desktop/Compiler/src/IR.cc",
+  "file": "/home/sucan/Desktop/Compiler/src/IR.cc"
+},
+{
+  "directory": "/home/sucan/Desktop/Compiler/build",
+  "command": "/usr/bin/c++  -Dboost_EXPORTS -I/home/sucan/Desktop/Compiler/include  -std=c++11 -O2 -Wall -fPIC  -fPIC   -o CMakeFiles/boost.dir/src/IRMutator.cc.o -c /home/sucan/Desktop/Compiler/src/IRMutator.cc",
+  "file": "/home/sucan/Desktop/Compiler/src/IRMutator.cc"
+},
+{
+  "directory": "/home/sucan/Desktop/Compiler/build",
+  "command": "/usr/bin/c++  -Dboost_EXPORTS -I/home/sucan/Desktop/Compiler/include  -std=c++11 -O2 -Wall -fPIC  -fPIC   -o CMakeFiles/boost.dir/src/IRPrinter.cc.o -c /home/sucan/Desktop/Compiler/src/IRPrinter.cc",
+  "file": "/home/sucan/Desktop/Compiler/src/IRPrinter.cc"
+},
+{
+  "directory": "/home/sucan/Desktop/Compiler/build",
+  "command": "/usr/bin/c++  -Dboost_EXPORTS -I/home/sucan/Desktop/Compiler/include  -std=c++11 -O2 -Wall -fPIC  -fPIC   -o CMakeFiles/boost.dir/src/IRVisitor.cc.o -c /home/sucan/Desktop/Compiler/src/IRVisitor.cc",
+  "file": "/home/sucan/Desktop/Compiler/src/IRVisitor.cc"
+},
+{
+  "directory": "/home/sucan/Desktop/Compiler/build/test",
+  "command": "/usr/bin/c++   -I/home/sucan/Desktop/Compiler/include -I/home/sucan/Desktop/Compiler/test/../include  -std=c++11 -O2 -Wall -fPIC    -o CMakeFiles/conv2d.dir/conv2d.cc.o -c /home/sucan/Desktop/Compiler/test/conv2d.cc",
+  "file": "/home/sucan/Desktop/Compiler/test/conv2d.cc"
+},
+{
+  "directory": "/home/sucan/Desktop/Compiler/build/test",
+  "command": "/usr/bin/c++   -I/home/sucan/Desktop/Compiler/include -I/home/sucan/Desktop/Compiler/test/../include  -std=c++11 -O2 -Wall -fPIC    -o CMakeFiles/gemm.dir/gemm.cc.o -c /home/sucan/Desktop/Compiler/test/gemm.cc",
+  "file": "/home/sucan/Desktop/Compiler/test/gemm.cc"
+},
+{
+  "directory": "/home/sucan/Desktop/Compiler/build/project1",
+  "command": "/usr/bin/c++   -I/home/sucan/Desktop/Compiler/include -I/home/sucan/Desktop/Compiler/project1/../include  -std=c++11 -O2 -Wall -fPIC    -o CMakeFiles/solution.dir/solutions/example_solution.cc.o -c /home/sucan/Desktop/Compiler/project1/solutions/example_solution.cc",
+  "file": "/home/sucan/Desktop/Compiler/project1/solutions/example_solution.cc"
+},
+{
+  "directory": "/home/sucan/Desktop/Compiler/build/project1",
+  "command": "/usr/bin/c++   -I/home/sucan/Desktop/Compiler/include -I/home/sucan/Desktop/Compiler/project1/../include  -std=c++11 -O2 -Wall -fPIC    -o CMakeFiles/test1.dir/run.cc.o -c /home/sucan/Desktop/Compiler/project1/run.cc",
+  "file": "/home/sucan/Desktop/Compiler/project1/run.cc"
+},
+{
+  "directory": "/home/sucan/Desktop/Compiler/build/project1",
+  "command": "/usr/bin/c++   -I/home/sucan/Desktop/Compiler/include -I/home/sucan/Desktop/Compiler/project1/../include  -std=c++11 -O2 -Wall -fPIC    -o CMakeFiles/test1.dir/kernels/kernel_case1.cc.o -c /home/sucan/Desktop/Compiler/project1/kernels/kernel_case1.cc",
+  "file": "/home/sucan/Desktop/Compiler/project1/kernels/kernel_case1.cc"
+},
+{
+  "directory": "/home/sucan/Desktop/Compiler/build/project1",
+  "command": "/usr/bin/c++   -I/home/sucan/Desktop/Compiler/include -I/home/sucan/Desktop/Compiler/project1/../include  -std=c++11 -O2 -Wall -fPIC    -o CMakeFiles/test1.dir/kernels/kernel_case10.cc.o -c /home/sucan/Desktop/Compiler/project1/kernels/kernel_case10.cc",
+  "file": "/home/sucan/Desktop/Compiler/project1/kernels/kernel_case10.cc"
+},
+{
+  "directory": "/home/sucan/Desktop/Compiler/build/project1",
+  "command": "/usr/bin/c++   -I/home/sucan/Desktop/Compiler/include -I/home/sucan/Desktop/Compiler/project1/../include  -std=c++11 -O2 -Wall -fPIC    -o CMakeFiles/test1.dir/kernels/kernel_case4.cc.o -c /home/sucan/Desktop/Compiler/project1/kernels/kernel_case4.cc",
+  "file": "/home/sucan/Desktop/Compiler/project1/kernels/kernel_case4.cc"
+},
+{
+  "directory": "/home/sucan/Desktop/Compiler/build/project1",
+  "command": "/usr/bin/c++   -I/home/sucan/Desktop/Compiler/include -I/home/sucan/Desktop/Compiler/project1/../include  -std=c++11 -O2 -Wall -fPIC    -o CMakeFiles/test1.dir/kernels/kernel_case5.cc.o -c /home/sucan/Desktop/Compiler/project1/kernels/kernel_case5.cc",
+  "file": "/home/sucan/Desktop/Compiler/project1/kernels/kernel_case5.cc"
+},
+{
+  "directory": "/home/sucan/Desktop/Compiler/build/project1",
+  "command": "/usr/bin/c++   -I/home/sucan/Desktop/Compiler/include -I/home/sucan/Desktop/Compiler/project1/../include  -std=c++11 -O2 -Wall -fPIC    -o CMakeFiles/test1.dir/kernels/kernel_case6.cc.o -c /home/sucan/Desktop/Compiler/project1/kernels/kernel_case6.cc",
+  "file": "/home/sucan/Desktop/Compiler/project1/kernels/kernel_case6.cc"
+},
+{
+  "directory": "/home/sucan/Desktop/Compiler/build/project1",
+  "command": "/usr/bin/c++   -I/home/sucan/Desktop/Compiler/include -I/home/sucan/Desktop/Compiler/project1/../include  -std=c++11 -O2 -Wall -fPIC    -o CMakeFiles/test1.dir/kernels/kernel_case7.cc.o -c /home/sucan/Desktop/Compiler/project1/kernels/kernel_case7.cc",
+  "file": "/home/sucan/Desktop/Compiler/project1/kernels/kernel_case7.cc"
+},
+{
+  "directory": "/home/sucan/Desktop/Compiler/build/project1",
+  "command": "/usr/bin/c++   -I/home/sucan/Desktop/Compiler/include -I/home/sucan/Desktop/Compiler/project1/../include  -std=c++11 -O2 -Wall -fPIC    -o CMakeFiles/test1.dir/kernels/kernel_example.cc.o -c /home/sucan/Desktop/Compiler/project1/kernels/kernel_example.cc",
+  "file": "/home/sucan/Desktop/Compiler/project1/kernels/kernel_example.cc"
+},
+{
+  "directory": "/home/sucan/Desktop/Compiler/build/project1",
+  "command": "/usr/bin/c++   -I/home/sucan/Desktop/Compiler/include -I/home/sucan/Desktop/Compiler/project1/../include  -std=c++11 -O2 -Wall -fPIC    -o CMakeFiles/cleanf.dir/clean/clean.cc.o -c /home/sucan/Desktop/Compiler/project1/clean/clean.cc",
+  "file": "/home/sucan/Desktop/Compiler/project1/clean/clean.cc"
+},
+{
+  "directory": "/home/sucan/Desktop/Compiler/build/project1/solutions",
+  "command": "/usr/bin/c++   -I/home/sucan/Desktop/Compiler/include -I/home/sucan/Desktop/Compiler/build/lib  -std=c++11 -O2 -Wall -fPIC    -Wall -Wextra -Werror -Wno-unused-parameter -Wno-unused-function -o CMakeFiles/parser.dir/token.cc.o -c /home/sucan/Desktop/Compiler/build/project1/solutions/token.cc",
+  "file": "/home/sucan/Desktop/Compiler/build/project1/solutions/token.cc"
+},
+{
+  "directory": "/home/sucan/Desktop/Compiler/build/project1/solutions",
+  "command": "/usr/bin/c++   -I/home/sucan/Desktop/Compiler/include -I/home/sucan/Desktop/Compiler/build/lib  -std=c++11 -O2 -Wall -fPIC    -Wall -Wextra -Werror -Wno-unused-parameter -Wno-unused-function -o CMakeFiles/parser.dir/grammar.cc.o -c /home/sucan/Desktop/Compiler/build/project1/solutions/grammar.cc",
+  "file": "/home/sucan/Desktop/Compiler/build/project1/solutions/grammar.cc"
+},
+{
+  "directory": "/home/sucan/Desktop/Compiler/build/project1/solutions",
+  "command": "/usr/bin/c++   -I/home/sucan/Desktop/Compiler/include -I/home/sucan/Desktop/Compiler/build/lib  -std=c++11 -O2 -Wall -fPIC    -Wall -Wextra -Werror -Wno-unused-parameter -Wno-unused-function -o CMakeFiles/parser_main.dir/test_main/parser_main.cc.o -c /home/sucan/Desktop/Compiler/project1/solutions/test_main/parser_main.cc",
+  "file": "/home/sucan/Desktop/Compiler/project1/solutions/test_main/parser_main.cc"
+}
+]

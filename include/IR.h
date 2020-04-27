@@ -156,8 +156,9 @@ class IRNode {
      * for IRVisitor
      */ 
     virtual void visit_node(IRVisitor *visitor) const = 0;
+    virtual void visit_node(IRVisitor *visitor, int argu) const = 0;
 
- private:
+   private:
     /**
      * indicate the concrete type of this IR node
      */ 
@@ -232,6 +233,7 @@ class IntImm : public ExprNode, public std::enable_shared_from_this<IntImm> {
 
     Expr mutate_expr(IRMutator *mutator) const;
     void visit_node(IRVisitor *visitor) const;
+    void visit_node(IRVisitor *visitor, int argu) const;
 
     static Ref<const IntImm> make(Type t, const int64_t _value) {
         return std::make_shared<const IntImm>(t, _value);
@@ -259,6 +261,7 @@ class UIntImm : public ExprNode, public std::enable_shared_from_this<UIntImm> {
 
     Expr mutate_expr(IRMutator *mutator) const;
     void visit_node(IRVisitor *visitor) const;
+    void visit_node(IRVisitor *visitor, int argu) const;
 
     static Ref<const UIntImm> make(Type t, const uint64_t _value) {
         return std::make_shared<const UIntImm>(t, _value);
@@ -286,6 +289,7 @@ class FloatImm : public ExprNode, public std::enable_shared_from_this<FloatImm> 
 
     Expr mutate_expr(IRMutator *mutator) const;
     void visit_node(IRVisitor *visitor) const;
+    void visit_node(IRVisitor *visitor, int argu) const;
 
     static Ref<const FloatImm> make(Type t, const double _value) {
         return std::make_shared<const FloatImm>(t, _value);
@@ -311,6 +315,7 @@ class StringImm : public ExprNode, public std::enable_shared_from_this<StringImm
 
     Expr mutate_expr(IRMutator *mutator) const;
     void visit_node(IRVisitor *visitor) const;
+    void visit_node(IRVisitor *visitor, int argu) const;
 
     static Ref<const StringImm> make(Type t, const std::string _value) {
         return std::make_shared<const StringImm>(t, _value);
@@ -389,6 +394,10 @@ class Expr : public Ref<const ExprNode> {
 
     void visit_expr(IRVisitor *visitor) const {
         return this->get()->visit_node(visitor);
+    }
+
+    void visit_expr(IRVisitor *visitor, int argu) const {
+        return this->get()->visit_node(visitor, argu);
     }
 
     Expr mutate_expr(IRMutator *mutator) const {
@@ -531,6 +540,7 @@ class Unary : public ExprNode, public std::enable_shared_from_this<Unary> {
 
     Expr mutate_expr(IRMutator *mutator) const;
     void visit_node(IRVisitor *visitor) const;
+    void visit_node(IRVisitor *visitor, int argu) const;
 
     static Expr make(Type t, UnaryOpType _op_type, Expr _a) {
         return std::make_shared<const Unary>(t, _op_type, _a);
@@ -565,6 +575,7 @@ class Binary : public ExprNode, public std::enable_shared_from_this<Binary> {
 
     Expr mutate_expr(IRMutator *mutator) const;
     void visit_node(IRVisitor *visitor) const;
+    void visit_node(IRVisitor *visitor, int argu) const;
 
     static Expr make(Type t, BinaryOpType _op_type, Expr _a, Expr _b) {
         return std::make_shared<const Binary>(t, _op_type, _a, _b);
@@ -597,6 +608,7 @@ class Compare : public ExprNode, public std::enable_shared_from_this<Compare> {
 
     Expr mutate_expr(IRMutator *mutator) const;
     void visit_node(IRVisitor *visitor) const;
+    void visit_node(IRVisitor *visitor, int argu) const;
 
     static Expr make(Type t, CompareOpType _op_type, Expr _a, Expr _b) {
         return std::make_shared<const Compare>(t, _op_type, _a, _b);
@@ -619,6 +631,7 @@ class Select : public ExprNode, public std::enable_shared_from_this<Select> {
 
     Expr mutate_expr(IRMutator *mutator) const;
     void visit_node(IRVisitor *visitor) const;
+    void visit_node(IRVisitor *visitor, int argu) const;
 
     static Expr make(Type t, Expr _cond, Expr _true_value, Expr _false_value) {
         return std::make_shared<const Select>(t, _cond, _true_value, _false_value);
@@ -648,7 +661,8 @@ class Call : public ExprNode, public std::enable_shared_from_this<Call> {
 
     Expr mutate_expr(IRMutator *mutator) const;
     void visit_node(IRVisitor *visitor) const;
-    
+    void visit_node(IRVisitor *visitor, int argu) const;
+
     static Expr make(Type t, const std::vector<Expr> &_args, const std::string &_func_name, CallType _call_type) {
         return std::make_shared<const Call>(t, _args, _func_name, _call_type);
     }
@@ -670,6 +684,7 @@ class Cast : public ExprNode, public std::enable_shared_from_this<Cast> {
 
     Expr mutate_expr(IRMutator *mutator) const;
     void visit_node(IRVisitor *visitor) const;
+    void visit_node(IRVisitor *visitor, int argu) const;
 
     static Expr make(Type t, Type _new_type, Expr _val) {
         return std::make_shared<const Cast>(t, _new_type, _val);
@@ -694,6 +709,7 @@ class Ramp : public ExprNode, public std::enable_shared_from_this<Ramp> {
 
     Expr mutate_expr(IRMutator *mutator) const;
     void visit_node(IRVisitor *visitor) const;
+    void visit_node(IRVisitor *visitor, int argu) const;
 
     static Expr make(Type t, Expr _base, uint16_t _stride, uint16_t _lanes) {
         return std::make_shared<const Ramp>(t, _base, _stride, _lanes);
@@ -725,6 +741,7 @@ class Var : public ExprNode, public std::enable_shared_from_this<Var> {
 
     Expr mutate_expr(IRMutator *mutator) const;
     void visit_node(IRVisitor *visitor) const;
+    void visit_node(IRVisitor *visitor, int argu) const;
 
     static Expr make(Type t, const std::string &_name, const std::vector<Expr> &_args,
         const std::vector<size_t> &_shape) {
@@ -747,7 +764,8 @@ class Dom : public ExprNode, public std::enable_shared_from_this<Dom> {
 
     Expr mutate_expr(IRMutator *mutator) const;
     void visit_node(IRVisitor *visitor) const;
-    
+    void visit_node(IRVisitor *visitor, int argu) const;
+
     static Expr make(Type t, Expr _begin, Expr _extent) {
         return std::make_shared<const Dom>(t, _begin, _extent);
     }
@@ -780,6 +798,7 @@ class Index : public ExprNode, public std::enable_shared_from_this<Index> {
 
     Expr mutate_expr(IRMutator *mutator) const;
     void visit_node(IRVisitor *visitor) const;
+    void visit_node(IRVisitor *visitor, int argu) const;
 
     static Expr make(Type t, const std::string &_name, Expr _dom, IndexType _index_type) {
         return std::make_shared<const Index>(t, _name, _dom, _index_type);
@@ -803,6 +822,7 @@ class LoopNest : public StmtNode, public std::enable_shared_from_this<LoopNest> 
 
     Stmt mutate_stmt(IRMutator *mutator) const;
     void visit_node(IRVisitor *visitor) const;
+    void visit_node(IRVisitor *visitor, int argu) const;
 
     static Stmt make(const std::vector<Expr> &_index_list, const std::vector<Stmt> &_body_list) {
         return std::make_shared<const LoopNest>(_index_list, _body_list);
@@ -826,7 +846,8 @@ class IfThenElse : public StmtNode, public std::enable_shared_from_this<IfThenEl
 
     Stmt mutate_stmt(IRMutator *mutator) const;
     void visit_node(IRVisitor *visitor) const;
-    
+    void visit_node(IRVisitor *visitor, int argu) const;
+
     static Stmt make(Expr _cond, Stmt _true_case, Stmt _false_case) {
         return std::make_shared<const IfThenElse>(_cond, _true_case, _false_case);
     }
@@ -866,7 +887,8 @@ class Move : public StmtNode, public std::enable_shared_from_this<Move> {
 
     Stmt mutate_stmt(IRMutator *mutator) const;
     void visit_node(IRVisitor *visitor) const;
-    
+    void visit_node(IRVisitor *visitor, int argu) const;
+
     static Stmt make(Expr _dst, Expr _src, MoveType _move_type) {
         return std::make_shared<const Move>(_dst, _src, _move_type);
     }
@@ -896,7 +918,8 @@ class Kernel : public GroupNode, public std::enable_shared_from_this<Kernel> {
 
     Group mutate_group(IRMutator *mutator) const;
     void visit_node(IRVisitor *visitor) const;
-    
+    void visit_node(IRVisitor *visitor, int argu) const;
+
     static Group make(const std::string &_name, const std::vector<std::string> &_inputs,
         const std::vector<std::string> &_outputs, const std::vector<Stmt> &_stmt_list, KernelType _kernel_type) {
         return std::make_shared<const Kernel>(_name, _inputs, _outputs, _stmt_list, _kernel_type);

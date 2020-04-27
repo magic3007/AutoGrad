@@ -1,6 +1,6 @@
 /*
  * MIT License
- * 
+ *
  * Copyright (c) 2020 Size Zheng
 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -9,10 +9,11 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- 
- * The above copyright notice and this permission notice shall be included in all
+
+ * The above copyright notice and this permission notice shall be included in
+ all
  * copies or substantial portions of the Software.
- 
+
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -25,18 +26,17 @@
 #ifndef BOOST_IRPRINTER_H
 #define BOOST_IRPRINTER_H
 
-#include <string>
 #include <sstream>
+#include <string>
 
 #include "IRVisitor.h"
-
 
 namespace Boost {
 
 namespace Internal {
 
 class IRPrinter : public IRVisitor {
- public:
+   public:
     IRPrinter() : IRVisitor() {
         indent = 0;
         print_range = false;
@@ -46,17 +46,12 @@ class IRPrinter : public IRVisitor {
     std::string print(const Group&);
 
     void print_indent() {
-        for (int i = 0; i < indent; ++i)
-            oss << " ";
+        for (int i = 0; i < indent; ++i) oss << " ";
     }
 
-    void enter() {
-        indent += 2;
-    }
+    void enter() { indent += 2; }
 
-    void exit() {
-        indent -= 2;
-    }
+    void exit() { indent -= 2; }
 
     void visit(Ref<const IntImm>) override;
     void visit(Ref<const UIntImm>) override;
@@ -76,7 +71,12 @@ class IRPrinter : public IRVisitor {
     void visit(Ref<const IfThenElse>) override;
     void visit(Ref<const Move>) override;
     void visit(Ref<const Kernel>) override;
- private:
+
+    void visit(Ref<const IntImm>, int) override;
+    void visit(Ref<const Binary>, int) override;
+    void visit(Ref<const Var>, int) override;
+
+   protected:
     std::ostringstream oss;
     int indent;
     bool print_range;
@@ -85,6 +85,5 @@ class IRPrinter : public IRVisitor {
 }  // namespace Internal
 
 }  // namespace Boost
-
 
 #endif  // BOOST_IRPRINTER_H

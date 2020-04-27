@@ -309,6 +309,11 @@ void IRPrinter::visit(Ref<const Kernel> op) {
     oss << "}\n";
 }
 
+void IRPrinter::visit(Ref<const IntImm> op, int argu) { visit(op); }
+
+void IRPrinter::visit(Ref<const Binary> op, int argu) { visit(op); }
+
+void IRPrinter::visit(Ref<const Var> op, int argu) { visit(op); }
 
 }  // namespace Internal
 
