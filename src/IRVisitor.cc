@@ -96,6 +96,10 @@ void IRVisitor::visit(Ref<const Ramp> op) {
     return;
 }
 
+void IRVisitor::visit(Ref<const Bracket> op){
+  (op->exp).visit_expr(this);
+  return;
+}
 
 void IRVisitor::visit(Ref<const Var> op) {
     for (auto arg : op->args) {
@@ -127,6 +131,7 @@ void IRVisitor::visit(Ref<const LoopNest> op) {
     }
     return;
 }
+
 
 
 void IRVisitor::visit(Ref<const IfThenElse> op) {

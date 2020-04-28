@@ -31,6 +31,7 @@ class CPPPrinter : public IRPrinter {
     void visit(Ref<const Var>) override;
     void visit(Ref<const Move>) override;
     void visit(Ref<const Kernel>) override;
+    void visit(Ref<const Bracket>) override;
 
     void visit(Ref<const IntImm>, int) override;
     void visit(Ref<const Binary>, int) override;

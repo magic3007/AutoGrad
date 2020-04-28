@@ -84,6 +84,10 @@ Expr Dom::mutate_expr(IRMutator *mutator) const {
     return mutator->visit(Ref<const Dom>(shared_from_this()));
 }
 
+Expr Bracket::mutate_expr(IRMutator *mutator) const{
+  return mutator->visit(Ref<const Bracket>(shared_from_this()));
+}
+
 Expr Index::mutate_expr(IRMutator *mutator) const {
     return mutator->visit(Ref<const Index>(shared_from_this()));
 }
@@ -160,6 +164,10 @@ void Dom::visit_node(IRVisitor *visitor) const {
     return visitor->visit(Ref<const Dom>(shared_from_this()));
 }
 
+void Bracket::visit_node(IRVisitor *visitor) const {
+  return visitor->visit(Ref<const Bracket>(shared_from_this()));
+}
+
 void Index::visit_node(IRVisitor *visitor) const {
     return visitor->visit(Ref<const Index>(shared_from_this()));
 }
@@ -190,6 +198,10 @@ void IntImm::visit_node(IRVisitor *visitor, int argu) const {
 
 void UIntImm::visit_node(IRVisitor *visitor, int argu) const {
     visit_node(visitor);
+}
+
+void Bracket::visit_node(IRVisitor *visitor, int argu) const {
+  visit_node(visitor);
 }
 
 void FloatImm::visit_node(IRVisitor *visitor, int argu) const {

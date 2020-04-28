@@ -127,7 +127,8 @@ enum class IRNodeType : short {
     UIntImm,
     FloatImm,
     StringImm,
-    Dom
+    Dom,
+    Bracket
 };
 
 
@@ -693,6 +694,22 @@ class Cast : public ExprNode, public std::enable_shared_from_this<Cast> {
     static const IRNodeType node_type_ = IRNodeType::Cast;
 };
 
+class Bracket : public ExprNode, public std::enable_shared_from_this<Bracket> {
+ public:
+    Expr exp;
+    Bracket(Expr _exp) :
+      ExprNode(_exp->type(), IRNodeType::Bracket), exp(_exp) {}
+
+    Expr mutate_expr(IRMutator *mutator) const;
+    void visit_node(IRVisitor *visitor) const;
+    void visit_node(IRVisitor *visitor, int argu) const;
+
+    static Ref<const Bracket> make(Expr _exp) {
+        return std::make_shared<const Bracket>(_exp);
+    }
+
+    static const IRNodeType node_type_ = IRNodeType::Bracket;
+};
 
 /**
  * ramp, used for vectorization
@@ -772,6 +789,7 @@ class Dom : public ExprNode, public std::enable_shared_from_this<Dom> {
 
     static const IRNodeType node_type_ = IRNodeType::Dom;
 };
+
 
 
 enum class IndexType : uint8_t {
@@ -918,6 +936,7 @@ class Kernel : public GroupNode, public std::enable_shared_from_this<Kernel> {
 
     Group mutate_group(IRMutator *mutator) const;
     void visit_node(IRVisitor *visitor) const;
+    void visit_node(IRVisitor *visitor, int argu) const; //
     
     static Group make(const std::string &_name, const std::vector<Expr> &_inputs,
         const std::vector<Expr> &_outputs, const std::vector<Stmt> &_stmt_list, KernelType _kernel_type) {

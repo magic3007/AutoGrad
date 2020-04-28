@@ -151,7 +151,8 @@ Rhs
         }
     | TLPAREN Rhs TRPAREN
     	{
-    	    $$ = $2;
+    	    $$ = new Expr(Bracket::make(*$2));
+    	    delete $2;
     	}
     | TRef
         {

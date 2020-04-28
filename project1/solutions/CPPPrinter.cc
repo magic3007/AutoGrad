@@ -1,20 +1,8 @@
-#include "CPPPrinter.h"
+#include "../project1/solutions/CPPPrinter.h"
 
 namespace Boost {
 
 namespace Internal {
-
-std::string CPPPrinter::print(const Expr &expr) {
-    oss.clear();
-    expr.visit_expr(this);
-    return oss.str();
-}
-
-std::string CPPPrinter::print(const Stmt &stmt) {
-    oss.clear();
-    stmt.visit_stmt(this);
-    return oss.str();
-}
 
 std::string CPPPrinter::print(const Group &group) {
     oss.clear();
@@ -22,6 +10,12 @@ std::string CPPPrinter::print(const Group &group) {
     suffix.clear();
     group.visit_group(this);
     return "";
+}
+
+void CPPPrinter::visit(Ref<const Bracket> op) {
+  oss << " ( ";
+  (op->exp).visit_expr(this);
+  oss << " ) ";
 }
 
 void CPPPrinter::visit(Ref<const IntImm> op) { oss << op->value(); }
@@ -52,7 +46,6 @@ void CPPPrinter::visit(Ref<const Var> op) {
     if (dim < 2) return;
     for (size_t i = 0; i < op->args.size(); ++i) {
         oss << "[";
-        // op->args[i].visit_expr(this);
         op->args[i].visit_expr(this, op->shape[i]);
         oss << "]";
     }
