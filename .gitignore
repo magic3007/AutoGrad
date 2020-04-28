@@ -1,6 +1,6 @@
 # IDE Config
 .idea
-
+.vscode
 playground
 cmake-build*/
 build/
