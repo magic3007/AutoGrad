@@ -70,6 +70,8 @@ add_library(parser  STATIC
 add_library_config(parser)
 target_link_libraries(parser ${LIB_NAME})
 
+include_directories(3rd)
+
 ### test_main
 
 add_executable(parser_main
