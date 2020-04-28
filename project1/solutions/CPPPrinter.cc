@@ -14,9 +14,9 @@ std::string CPPPrinter::print(const Group &group) {
 }
 
 void CPPPrinter::visit(Ref<const Bracket> op) {
-    oss << " ( ";
+    oss << "(";
     (op->exp).visit_expr(this);
-    oss << " ) ";
+    oss << ")";
 }
 
 void CPPPrinter::visit(Ref<const IntImm> op) { oss << op->value(); }
@@ -110,7 +110,7 @@ void CPPPrinter::visit(Ref<const Move> op) {
     for (std::string i : indices) {
         prefix_indent();
         prefix << "for (int " << i << " = 0; " << i << " < " << ranges[i]
-               << "; ++i) {\n";
+               << "; ++"<<i<<") {\n";
         enter();
     }
     prefix_indent();

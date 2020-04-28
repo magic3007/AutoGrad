@@ -161,9 +161,9 @@ void IRPrinter::visit(Ref<const Ramp> op) {
 }
 
 void IRPrinter::visit(Ref<const Bracket> op) {
-    oss << " ( ";
+    oss << "(";
     (op->exp).visit_expr(this);
-    oss << " ) ";
+    oss << ")";
     return;
 }
 
