@@ -36,7 +36,7 @@ void CPPPrinter::visit(Ref<const Binary> op) {
     } else if (op->op_type == BinaryOpType::Mod) {
         oss << " % ";
     } else if (op->op_type == BinaryOpType::IntDiv) {
-        oss << " // ";
+        oss << " / ";
     }
     (op->b).visit_expr(this);
 }
@@ -55,6 +55,17 @@ void CPPPrinter::visit(Ref<const Var> op) {
 void CPPPrinter::visit(Ref<const IntImm> op, int argu) { oss << op->value(); }
 
 void CPPPrinter::visit(Ref<const Binary> op, int argu) {
+    // right side is an integer immediate
+    auto p = std::dynamic_pointer_cast<const IntImm>(op->b.real_ptr());
+    if (p != nullptr) {
+        if (op->op_type == BinaryOpType::Add) {
+            argu -= p->value();
+        } else if (op->op_type == BinaryOpType::Mul) {
+            argu /= p->value();
+        } else if (op->op_type == BinaryOpType::IntDiv) {
+            argu *= p->value();
+        }
+    }
     (op->a).visit_expr(this, argu);
     if (op->op_type == BinaryOpType::Add) {
         oss << " + ";
@@ -67,8 +78,9 @@ void CPPPrinter::visit(Ref<const Binary> op, int argu) {
     } else if (op->op_type == BinaryOpType::Mod) {
         oss << " % ";
     } else if (op->op_type == BinaryOpType::IntDiv) {
-        oss << " // ";
+        oss << " / ";
     }
+
     (op->b).visit_expr(this, argu);
 }
 

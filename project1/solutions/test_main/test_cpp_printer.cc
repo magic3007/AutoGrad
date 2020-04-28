@@ -24,12 +24,15 @@ int main(int argc, char *argv[]) {
         {"case10",
          "A<8, 8>[i, j] = (B<10, 10>[i, j] + B<10, 10>[i + 1, j] + B<10, 10>[i "
          "+ 2, j]) / 3;"},
+        {"case_extra",
+         "A<9, 9>[i, j] = (B<10, 10>[i, j] + B<10, 10>[i + 5 + j, j] + B<10, "
+         "10>[i // 2, j]) / 3;"},
     };
     for (auto &e : texts) {
         auto &case_name = e.first;
         auto &text = e.second;
         fprintf(stdout, "=========================================\n");
-        fprintf(stdout, "%s:\n", case_name.c_str());
+        fprintf(stdout, "%s: %s\n", case_name.c_str(), text.c_str());
         Group kernel = parser::ParseFromString(text, 0);
         // printer
         CPPPrinter printer;
