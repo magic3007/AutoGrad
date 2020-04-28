@@ -13,8 +13,6 @@ namespace Internal {
 class CPPPrinter : public IRPrinter {
    public:
     CPPPrinter() : IRPrinter() {}
-    std::string print(const Expr &);
-    std::string print(const Stmt &);
     std::string print(const Group &);
 
     void prefix_indent() {

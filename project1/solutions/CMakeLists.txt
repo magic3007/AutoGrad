@@ -77,3 +77,9 @@ add_executable(parser_main
 )
 add_executable_config(parser_main)
 link_generated_library(parser_main parser)
+
+add_executable(test_cpp_printer
+        test_main/test_cpp_printer.cc CPPPrinter.cc parser.h
+)
+add_executable_config(test_cpp_printer)
+link_generated_library(test_cpp_printer parser)

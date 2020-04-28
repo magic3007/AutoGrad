@@ -1,5 +1,5 @@
+#include "../CPPPrinter.h"
 #include "../parser.h"
-#include "IRPrinter.h"
 
 using namespace Boost::Internal;
 using std::pair;
@@ -32,9 +32,8 @@ int main(int argc, char *argv[]) {
         fprintf(stdout, "%s:\n", case_name.c_str());
         Group kernel = parser::ParseFromString(text, 0);
         // printer
-        IRPrinter printer;
-        std::string code = printer.print(kernel);
-        std::cout << code;
+        CPPPrinter printer;
+        printer.print(kernel);
     }
     return 0;
 }

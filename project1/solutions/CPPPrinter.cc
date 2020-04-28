@@ -1,4 +1,4 @@
-#include "../project1/solutions/CPPPrinter.h"
+#include "CPPPrinter.h"
 
 namespace Boost {
 
@@ -102,7 +102,7 @@ void CPPPrinter::visit(Ref<const Move> op) {
     }
     prefix_indent();
     std::cout << prefix.str();
-    
+
     std::cout << oss.str();
 
     while (indent) {
