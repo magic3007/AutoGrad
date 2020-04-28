@@ -60,8 +60,6 @@ endfunction()
 
 # ===============================================================================
 
-add_subdirectory(utils)
-
 yacc_config(BisonTarget grammar.y)
 lex_config(FlexTarget token.l)
 ADD_FLEX_BISON_DEPENDENCY(FlexTarget BisonTarget)
