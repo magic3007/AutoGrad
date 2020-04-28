@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
         Group kernel = parser::ParseFromString(text, 0);
         // printer
         CPPPrinter printer;
-        printer.print(kernel);
+        std::cout << printer.print(kernel);
     }
     return 0;
 }

@@ -38,8 +38,7 @@ class CPPPrinter : public IRPrinter {
    private:
     std::map<std::string, int> ranges;
     std::vector<std::string> indices;
-    std::ostringstream prefix, suffix;
-    // std::vector<std::string> statements;
+    std::ostringstream prefix, suffix, code;
 };
 
 }  // namespace Internal

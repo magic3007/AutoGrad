@@ -160,6 +160,12 @@ void IRPrinter::visit(Ref<const Ramp> op) {
     oss << ", " << op->stride << ", " << op->lanes << ")";
 }
 
+void IRPrinter::visit(Ref<const Bracket> op) {
+    oss << " ( ";
+    (op->exp).visit_expr(this);
+    oss << " ) ";
+    return;
+}
 
 void IRPrinter::visit(Ref<const Var> op) {
     oss << op->name;

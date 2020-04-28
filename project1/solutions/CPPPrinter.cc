@@ -8,14 +8,15 @@ std::string CPPPrinter::print(const Group &group) {
     oss.clear();
     prefix.clear();
     suffix.clear();
+    code.clear();
     group.visit_group(this);
-    return "";
+    return code.str();
 }
 
 void CPPPrinter::visit(Ref<const Bracket> op) {
-  oss << " ( ";
-  (op->exp).visit_expr(this);
-  oss << " ) ";
+    oss << " ( ";
+    (op->exp).visit_expr(this);
+    oss << " ) ";
 }
 
 void CPPPrinter::visit(Ref<const IntImm> op) { oss << op->value(); }
@@ -101,16 +102,14 @@ void CPPPrinter::visit(Ref<const Move> op) {
         enter();
     }
     prefix_indent();
-    std::cout << prefix.str();
-
-    std::cout << oss.str();
 
     while (indent) {
         exit();
         suffix_indent();
         suffix << "}\n";
     }
-    std::cout << suffix.str();
+
+    code << prefix.str() << oss.str() << suffix.str();
 }
 
 void CPPPrinter::visit(Ref<const Kernel> op) {
