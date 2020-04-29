@@ -8,11 +8,10 @@ file(GLOB solution_src
 file(GLOB clean_src "./clean/*.cc")
 include_directories("../include")
 
-add_custom_target(testcase SOURCES ${test_case})
-
 add_executable(test1 ${test_src} ${kernel_src})
 
 add_executable(solution ${solution_src})
+target_link_libraries(solution ${LIB_NAME})
 target_include_directories(solution PRIVATE ./solutions/3rd)
 target_link_libraries(solution ${LIB_NAME} parser)
 
