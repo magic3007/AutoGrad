@@ -12,7 +12,7 @@ std::string signPrinter::print(const Group &group) {
     group.visit_group(this);
     std::string ret = "(";
     bool first = 1;
-    for (int i = 0; i < ins.size(); ++ i)
+    for (size_t i = 0; i < ins.size(); ++ i)
     {
         std::string name = ins[i];
         std::string size = ranges[name];
@@ -25,10 +25,10 @@ std::string signPrinter::print(const Group &group) {
         else
             ret += "(&"+name+")"+size;
     }
-    for (int i = 0; i < outs.size(); ++ i)
+    for (size_t i = 0; i < outs.size(); ++ i)
     {
         bool flag = 1;
-        for (int j = 0; j < ins.size() && flag; ++ j)
+        for (size_t j = 0; j < ins.size() && flag; ++ j)
             if (ins[j] == outs[i]) flag = 0;
         std::string name = outs[i];
         std::string size = ranges[name];

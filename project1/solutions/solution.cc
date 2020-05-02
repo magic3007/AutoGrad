@@ -4,6 +4,7 @@
 #include <string>
 #include <tuple>
 #include "nlohmann/json.hpp"
+#include "utils/base.h"
 #include "parser.h"
 #include "CPPPrinter.h"
 #include "signPrinter.h"
@@ -38,20 +39,27 @@ int main(int argc, char *argv[]){
       std::cerr << "Could not open file " << input_file << std::endl;
       exit(-1);
     }
+    DEFER({in_stream.close();});
+    std::ofstream out_stream(output_file);
+    if(!out_stream.is_open()){
+      std::cerr << "Could not open file " << output_file << std::endl;
+      exit(-1);
+    }
+    DEFER({out_stream.close();});
     json j;
     in_stream >> j;
-    in_stream.close();
     auto name = j["name"].get<string>();
     auto text = j["kernel"].get<string>();
+    auto ins = j["ins"];
+    auto outs = j["outs"];
     fprintf(stdout, "=========================================\n");
     fprintf(stdout, "%s: %s\n", name.c_str(), text.c_str());
     Group kernel = parser::ParseFromString(text, 0);
-    auto ins = j["ins"];
-    auto outs = j["outs"];
     signPrinter sprinter(ins, outs);
-    std::cout << "void "<< name.c_str() << sprinter.print(kernel) << std::endl;
+    out_stream << "void "<< name.c_str() << sprinter.print(kernel) << "{" << std::endl;
     CPPPrinter printer;
-    std::cout << printer.print(kernel);
+    out_stream << printer.print(kernel) << std::endl;
+    out_stream << "}" << std::endl;
   }
   return 0;
 }
