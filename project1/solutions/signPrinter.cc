@@ -5,10 +5,7 @@ namespace Boost {
 namespace Internal {
 
 std::string signPrinter::print(const Group &group) {
-    oss.clear();
-    prefix.clear();
-    suffix.clear();
-    code.clear();
+	ranges.clear();
     group.visit_group(this);
     std::string ret = "(";
     bool first = 1;
@@ -30,6 +27,7 @@ std::string signPrinter::print(const Group &group) {
         bool flag = 1;
         for (int j = 0; j < ins.size() && flag; ++ j)
             if (ins[j] == outs[i]) flag = 0;
+		if (!flag) continue;
         std::string name = outs[i];
         std::string size = ranges[name];
         if (!first)
