@@ -6,6 +6,7 @@
 #include "nlohmann/json.hpp"
 #include "parser.h"
 #include "CPPPrinter.h"
+#include "signPrinter.h"
 
 using namespace Boost::Internal;
 
@@ -45,6 +46,10 @@ int main(int argc, char *argv[]){
     fprintf(stdout, "=========================================\n");
     fprintf(stdout, "%s: %s\n", name.c_str(), text.c_str());
     Group kernel = parser::ParseFromString(text, 0);
+    auto ins = j["ins"];
+    auto outs = j["outs"];
+    signPrinter sprinter(ins, outs);
+    std::cout << "void "<< name.c_str() << sprinter.print(kernel) << std::endl;
     CPPPrinter printer;
     std::cout << printer.print(kernel);
   }
