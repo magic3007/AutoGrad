@@ -35,24 +35,24 @@ integer     {digit}+
 {ws}                        { /* no action and no return */ }
 
 {id}                        { SAVE_TOKEN; return TIDENTIFIER; }
-{float}	                    { SAVE_TOKEN; return TFLOAT; }
-{integer}	                  { SAVE_TOKEN; return TINTEGER; }
+{float}                     { SAVE_TOKEN; return TFLOAT; }
+{integer}                   { SAVE_TOKEN; return TINTEGER; }
 
 ";"                         { return TOKEN(TSEMICOLON); }
-"="						              { return TOKEN(TEQUAL); }
-","			                    { return TOKEN(TCOMMA); }
+"="                         { return TOKEN(TEQUAL); }
+","                         { return TOKEN(TCOMMA); }
 "["                         { return TOKEN(TLBRACKET); }
 "]"                         { return TOKEN(TRBRACKET); }
 "("                         { return TOKEN(TLPAREN); }
 ")"                         { return TOKEN(TRPAREN); }
-"<"			                    { return TOKEN(TCLT); }
-">"			                    { return TOKEN(TCGT); }
+"<"                         { return TOKEN(TCLT); }
+">"                         { return TOKEN(TCGT); }
 "+"                         { return TOKEN(TPLUS); }
 "-"                         { return TOKEN(TMINUS); }
 "*"                         { return TOKEN(TMUL); }
 "//"                        { return TOKEN(TINTDIV); }
 "/"                         { return TOKEN(TDIV); }
 "%"                         { return TOKEN(TMOD); }
-.						                { fprintf(stderr, "Unknown token:%s\n", yytext); yyterminate();}
+.                           { fprintf(stderr, "Unknown token:%s\n", yytext); yyterminate();}
 
 %%
