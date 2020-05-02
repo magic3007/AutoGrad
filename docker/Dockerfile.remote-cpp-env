@@ -8,6 +8,8 @@
 # ssh credentials (test user):
 #   ssh user@localhost -p 2233
 #
+# restart:
+#   docker restart clion_remote_env-boost
 # stop:
 #   docker stop clion_remote_env-boost
 # remove:
