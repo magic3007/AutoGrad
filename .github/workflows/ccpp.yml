@@ -13,9 +13,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: install-package
+      run: apt-get -y install bison flex
     - name: cmake
       run: mkdir build && cd build && cmake --version && cmake ..
     - name: make
       run: cd build && make -j 4
+    - name: test1
+      run: cd build && ./project1/test1
     - name: test
       run: cd build/test && ./gemm && ./conv2d
