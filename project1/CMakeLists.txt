@@ -4,7 +4,8 @@ file(GLOB test_src "*.cc")
 file(GLOB kernel_src "./kernels/*.cc")
 file(GLOB solution_src
         ./solutions/solution.cc
-        ./solutions/CPPPrinter.cc)
+        ./solutions/CPPPrinter.cc
+		./solutions/signPrinter.cc)
 file(GLOB clean_src "./clean/*.cc")
 include_directories("../include")
 
