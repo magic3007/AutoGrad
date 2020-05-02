@@ -18,13 +18,6 @@ class signPrinter : public IRPrinter {
     signPrinter(std::vector<std::string> _ins, std::vector<std::string> _outs) : IRPrinter() {ins = _ins;outs=_outs;}
     std::string print(const Group &);
 
-    void prefix_indent() {
-        for (int i = 0; i < indent; ++i) prefix << " ";
-    }
-
-    void suffix_indent() {
-        for (int i = 0; i < indent; ++i) suffix << " ";
-    }
 
     void visit(Ref<const IntImm>) override;
     void visit(Ref<const FloatImm>) override;
@@ -40,8 +33,6 @@ class signPrinter : public IRPrinter {
 
    private:
     std::map<std::string, std::string> ranges;
-    std::vector<std::string> indices;
-    std::ostringstream prefix, suffix, code;
     std::vector<std::string> ins;
     std::vector<std::string> outs;
 };
