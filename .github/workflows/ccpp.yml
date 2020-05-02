@@ -14,7 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: install-package
-      run: apt-get -y install bison flex
+      run: sudo apt-get -y install bison flex
     - name: cmake
       run: mkdir build && cd build && cmake --version && cmake ..
     - name: make
