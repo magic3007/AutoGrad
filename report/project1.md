@@ -61,7 +61,7 @@ demo见[此](http://showterm.io/9f6041d5b4a1c5b365b99).
 
 ### AST的生成
 
-在使用`json`库从输入文件中解析生成函数签名的基础上，我们查阅语相应语法规范编写了[grammar.y](../project1/solutions/grammar.y)和[token.l](../project1/solutions/tolen.l)两个语法文件，通过`flex` 和`bison`工具生成`token.cc`和`grammar.cc`两个文件，该文件可用于生成AST。具体的实现如下：
+在使用`json`库从输入文件中解析生成函数签名的基础上，我们查阅语相应语法规范编写了[grammar.y](../project1/solutions/grammar.y)和[token.l](../project1/solutions/token.l)两个语法文件，通过`flex` 和`bison`工具生成`token.cc`和`grammar.cc`两个文件，该文件可用于生成AST。具体的实现如下：
 
 #### token.l
 
@@ -132,13 +132,13 @@ integer     {digit}+
 
 %union  /* define stack type */
 {
-    Stmt*  			stmt;
-    Expr*   			expr;
-    std::vector<Stmt>*		stmt_vec;
-    std::vector<Expr>* 		expr_vec;
-    std::vector<size_t>* 	int_vec;
-    std::string* 		string;
-    int 			token;
+    Stmt*           stmt;
+    Expr*               expr;
+    std::vector<Stmt>*      stmt_vec;
+    std::vector<Expr>*      expr_vec;
+    std::vector<size_t>*    int_vec;
+    std::string*        string;
+    int             token;
 }
 ```
 
@@ -199,6 +199,86 @@ Group ParseFromString(const string &text, int verbose=0){
 
 
 ### 生成函数签名
+在实现了AST的基础上，定义并实现了类`signPrinter`继承给出的`IRPrinter`类，用于生成字符串形式的函数签名中的参数部分。本部分代码位于`signPrint.h`和`signPrint.cc`中。
+这个类的构造函数有两个参数，是解析json文件中得到的`ins`和`outs`的内容，分别记录了函数的输入和输出参数：
+```c++
+// signPrinter.h
+
+signPrinter(std::vector<std::string> _ins, std::vector<std::string> _outs) : IRPrinter() 
+{
+    ins = _ins;outs=_outs;
+}
+```
+类里有一个私有成员属性`map<string,string> ranges`，用来记录一个变量名到它的数组大小的映射，数组大小用一个字符串记录。如果该变量只是一个float而不是数组，则ranges里映射的为空字符串。在输出函数中，首先扫描ins里的元素，并生成对应字符串；然后扫描outs里的元素，并检查它是否在ins里面，若不在则生成对应字符串。
+
+最后参数部分与解析json得到的函数名部分组合，生成函数签名。
+
+`signPrinter`中的主要函数如下：
+```c++
+std::map<std::string, std::string> ranges;
+std::vector<std::string> ins;
+std::vector<std::string> outs;
+
+void signPrinter::visit(Ref<const Var> op) {
+    std::string name = op->name;
+    if (op->shape.size() == 1 && op->shape[0] == 1) //该变量不是数组
+    {
+        ranges[name] = "";
+        return;
+    }
+    //该变量是数组
+    std::string size = "[";
+
+    for (size_t j = 0; j < op->shape.size(); ++ j) {
+        size = size + std::to_string(op->shape[j]);
+        if (j < op->shape.size() - 1) {
+            size = size +  "][";
+        }
+    }
+    size += "]";
+    ranges[name] = size;
+}
+
+std::string signPrinter::print(const Group &group) {
+    ranges.clear();
+    group.visit_group(this);
+    std::string ret = "(";
+    bool first = 1;//first表示是否为第一个参数
+    for (int i = 0; i < ins.size(); ++ i)
+    {
+        std::string name = ins[i];
+        std::string size = ranges[name];
+        if (!first)
+            ret += ", ";
+        ret += "float ";
+        first = 0;
+        if (size.length() == 0)
+            ret += "&" +name;
+        else
+            ret += "(&"+name+")"+size;
+    }
+    for (int i = 0; i < outs.size(); ++ i)
+    {
+        bool flag = 1;
+        for (int j = 0; j < ins.size() && flag; ++ j)
+            if (ins[j] == outs[i]) flag = 0;
+        if (!flag) continue;
+        std::string name = outs[i];
+        std::string size = ranges[name];
+        if (!first)
+            ret += ", ";
+        ret += "float ";
+        first = 0;
+        if (size.length() == 0)
+            ret += "&" +name;
+        else
+            ret += "(&"+name+")"+size;   
+    }
+    ret += ")";
+    return ret;
+}
+```
+通过生成的`signPrinter`类提供的`print`接口即可解析语法分析树，生成函数签名。
 
 ### 生成函数主体
 
