@@ -43,8 +43,7 @@ void CPPPrinter::visit(Ref<const Binary> op) {
 
 void CPPPrinter::visit(Ref<const Var> op) {
     oss << op->name;
-    int dim = op->shape.size();
-    if (dim < 2) return;
+    if (op->shape.size() == 1 && op->shape[0] == 1) return;
     for (size_t i = 0; i < op->args.size(); ++i) {
         oss << "[";
         op->args[i].visit_expr(this, op->shape[i]);
@@ -110,7 +109,7 @@ void CPPPrinter::visit(Ref<const Move> op) {
     for (std::string i : indices) {
         prefix_indent();
         prefix << "for (int " << i << " = 0; " << i << " < " << ranges[i]
-               << "; ++"<<i<<") {\n";
+               << "; ++" << i << ") {\n";
         enter();
     }
     prefix_indent();
