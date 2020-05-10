@@ -58,8 +58,9 @@ int main(int argc, char *argv[]){
     auto text = j["kernel"].get<string>();
     auto ins = j["ins"];
     auto outs = j["outs"];
+	  auto type = j["data_type"].get<string>();
     Group kernel = parser::ParseFromString(text, 0);
-    signPrinter sprinter(ins, outs);
+    signPrinter sprinter(ins, outs, type);
     out_stream << "void "<< name.c_str() << sprinter.print(kernel) << "{" << std::endl;
     CPPPrinter printer;
     out_stream << printer.print(kernel) << std::endl;

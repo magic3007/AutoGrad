@@ -15,7 +15,8 @@ std::string signPrinter::print(const Group &group) {
         std::string size = ranges[name];
         if (!first)
             ret += ", ";
-        ret += "float ";
+        //ret += "float ";
+        ret += type + " ";
         first = 0;
         if (size.length() == 0)
             ret += "&" +name;
@@ -32,7 +33,8 @@ std::string signPrinter::print(const Group &group) {
         std::string size = ranges[name];
         if (!first)
             ret += ", ";
-        ret += "float ";
+        //ret += "float ";
+        ret += type + " ";
         first = 0;
         if (size.length() == 0)
             ret += "&" +name;

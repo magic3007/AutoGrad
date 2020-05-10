@@ -15,7 +15,7 @@ namespace Internal {
 class signPrinter : public IRPrinter {
    public:
     signPrinter() : IRPrinter(){}
-    signPrinter(std::vector<std::string> _ins, std::vector<std::string> _outs) : IRPrinter() {ins = _ins;outs=_outs;}
+    signPrinter(std::vector<std::string> _ins, std::vector<std::string> _outs, std::string _type) : IRPrinter() {ins = _ins;outs=_outs;type=_type;}
     std::string print(const Group &);
 
 
@@ -35,6 +35,7 @@ class signPrinter : public IRPrinter {
     std::map<std::string, std::string> ranges;
     std::vector<std::string> ins;
     std::vector<std::string> outs;
+    std::string type;
 };
 
 }  // namespace Internal
