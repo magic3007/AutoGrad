@@ -29,7 +29,7 @@ mkdir build && cd build
 cmake ..
 make -j4
 ./project1/test1
-``` 
+```
 demo见[此](http://showterm.io/9f6041d5b4a1c5b365b99).
 
 
@@ -200,24 +200,27 @@ Group ParseFromString(const string &text, int verbose=0){
 
 ### 生成函数签名
 在实现了AST的基础上，定义并实现了类`signPrinter`继承给出的`IRPrinter`类，用于生成字符串形式的函数签名中的参数部分。本部分代码位于`signPrint.h`和`signPrint.cc`中。
-这个类的构造函数有两个参数，是解析json文件中得到的`ins`和`outs`的内容，分别记录了函数的输入和输出参数：
+这个类的构造函数有三个参数，是解析json文件中得到的`ins`，`outs`及`data_type`的内容，分别记录了函数的输入输出参数和数据类型：
+
 ```c++
 // signPrinter.h
 
-signPrinter(std::vector<std::string> _ins, std::vector<std::string> _outs) : IRPrinter() 
+signPrinter(std::vector<std::string> _ins, std::vector<std::string> _outs, std::string _type) : IRPrinter() 
 {
-    ins = _ins;outs=_outs;
+    ins = _ins;outs=_outs;type=_type;
 }
 ```
-类里有一个私有成员属性`map<string,string> ranges`，用来记录一个变量名到它的数组大小的映射，数组大小用一个字符串记录。如果该变量只是一个float而不是数组，则ranges里映射的为空字符串。在输出函数中，首先扫描ins里的元素，并生成对应字符串；然后扫描outs里的元素，并检查它是否在ins里面，若不在则生成对应字符串。
+类里有一个私有成员属性`map<string,string> ranges`，用来记录一个变量名到它的数组大小的映射，数组大小用一个字符串记录。如果该变量不是数组，则ranges里映射的为空字符串。在输出函数中，首先扫描ins里的元素，并生成对应字符串；然后扫描outs里的元素，并检查它是否在ins里面，若不在则生成对应字符串。
 
 最后参数部分与解析json得到的函数名部分组合，生成函数签名。
 
 `signPrinter`中的主要函数如下：
+
 ```c++
 std::map<std::string, std::string> ranges;
 std::vector<std::string> ins;
 std::vector<std::string> outs;
+std::string type;
 
 void signPrinter::visit(Ref<const Var> op) {
     std::string name = op->name;
@@ -243,31 +246,31 @@ std::string signPrinter::print(const Group &group) {
     ranges.clear();
     group.visit_group(this);
     std::string ret = "(";
-    bool first = 1;//first表示是否为第一个参数
-    for (int i = 0; i < ins.size(); ++ i)
+    bool first = 1;
+    for (size_t i = 0; i < ins.size(); ++ i)
     {
         std::string name = ins[i];
         std::string size = ranges[name];
         if (!first)
             ret += ", ";
-        ret += "float ";
+        ret += type + " ";
         first = 0;
         if (size.length() == 0)
             ret += "&" +name;
         else
             ret += "(&"+name+")"+size;
     }
-    for (int i = 0; i < outs.size(); ++ i)
+    for (size_t i = 0; i < outs.size(); ++ i)
     {
         bool flag = 1;
-        for (int j = 0; j < ins.size() && flag; ++ j)
+        for (size_t j = 0; j < ins.size() && flag; ++ j)
             if (ins[j] == outs[i]) flag = 0;
-        if (!flag) continue;
+		if (!flag) continue;
         std::string name = outs[i];
         std::string size = ranges[name];
         if (!first)
             ret += ", ";
-        ret += "float ";
+        ret += type + " ";
         first = 0;
         if (size.length() == 0)
             ret += "&" +name;
