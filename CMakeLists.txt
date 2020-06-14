@@ -44,7 +44,7 @@ endfunction()
 set(defualt_generated_library_path "${PROJECT_BINARY_DIR}/lib")
 
 function(link_generated_library TARGETNAME LIBNAME)
-    include_directories(${defualt_generated_library_path})
+    link_directories(${defualt_generated_library_path})
     target_link_libraries(${TARGETNAME} PRIVATE ${LIBNAME})
 endfunction()
 
