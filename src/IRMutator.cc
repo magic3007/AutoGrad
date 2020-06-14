@@ -63,7 +63,8 @@ Expr IRMutator::visit(Ref<const StringImm> op) {
 }
 
 Expr IRMutator::visit(Ref<const Bracket> op){
-  return op;
+  Expr new_exp = mutate(op->exp);
+  return Bracket::make(new_exp);
 }
 
 Expr IRMutator::visit(Ref<const Unary> op) {
