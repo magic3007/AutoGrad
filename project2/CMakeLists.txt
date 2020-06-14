@@ -5,9 +5,15 @@ file(GLOB clean_src "./clean/*.cc")
 
 include_directories("../include")
 
+add_subdirectory(solution)
+
 add_executable(test2 ${test_src} ${kernel_src})
 add_executable(solution2 ${solution_src})
-target_link_libraries(solution2 ${LIB_NAME})
+target_include_directories(solution2 PRIVATE
+        ./solutions/3rd
+        ${PROJECT_SOURCE_DIR}/project1/solutions
+        ${PROJECT_SOURCE_DIR}/project1/solutions/3rd)
+target_link_libraries(solution2 ${LIB_NAME} parser)
 add_executable(cleanf2 ${clean_src})
 
 add_custom_target(solution_run2

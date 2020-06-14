@@ -19,47 +19,6 @@ ENDMACRO()
 
 # Another script: Credit to https://cmake.org/pipermail/cmake/2007-July/015398.html
 
-# =====================================================================================
-
-function(add_executable_config TARGETNAME)
-    # TODO: consider check_and_add_compiler_option()
-    target_compile_options(${TARGETNAME} PRIVATE
-        -Wall -Wextra -Werror
-            -Wno-unused-parameter
-            -Wno-unused-function
-        )
-#    Cmake 3.17 or later
-#    target_link_directories(${TARGETNAME}
-#            PRIVATE "${PROJECT_BINARY_DIR}/lib"
-#            )
-    set_target_properties(${TARGETNAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY
-            "${PROJECT_BINARY_DIR}/bin")
-endfunction()
-
-function(add_library_config TARGETNAME)
-    # TODO: consider check_and_add_compiler_option()
-    target_compile_options(${TARGETNAME} PRIVATE
-        -Wall -Wextra -Werror
-            -Wno-unused-parameter
-            -Wno-unused-function
-        )
-#    Cmake 3.17 or later
-#    target_link_directories(${TARGETNAME}
-#            PRIVATE "${PROJECT_BINARY_DIR}/lib"
-#            )
-    set_target_properties(${TARGETNAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY
-            "${PROJECT_BINARY_DIR}/lib")
-endfunction()
-
-set(defualt_generated_library_path "${PROJECT_BINARY_DIR}/lib")
-
-function(link_generated_library TARGETNAME LIBNAME)
-    include_directories(${defualt_generated_library_path})
-    target_link_libraries(${TARGETNAME} PRIVATE ${LIBNAME})
-endfunction()
-
-# ===============================================================================
-
 yacc_config(BisonTarget grammar.y)
 lex_config(FlexTarget token.l)
 ADD_FLEX_BISON_DEPENDENCY(FlexTarget BisonTarget)

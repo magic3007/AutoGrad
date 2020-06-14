@@ -7,6 +7,50 @@ message(STATUS "PROJECT_BINARY_DIR: ${PROJECT_BINARY_DIR}")
 set(CMAKE_VERBOSE_MAKEFILE  off)
 set(CMAKE_EXPORT_COMPILE_COMMANDS on)
 
+# =====================================================================================
+# helper Functions
+# =====================================================================================
+
+function(add_executable_config TARGETNAME)
+    # TODO: consider check_and_add_compiler_option()
+    target_compile_options(${TARGETNAME} PRIVATE
+        -Wall -Wextra -Werror
+            -Wno-unused-parameter
+            -Wno-unused-function
+        )
+#    Cmake 3.17 or later
+#    target_link_directories(${TARGETNAME}
+#            PRIVATE "${PROJECT_BINARY_DIR}/lib"
+#            )
+    set_target_properties(${TARGETNAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY
+            "${PROJECT_BINARY_DIR}/bin")
+endfunction()
+
+function(add_library_config TARGETNAME)
+    # TODO: consider check_and_add_compiler_option()
+    target_compile_options(${TARGETNAME} PRIVATE
+        -Wall -Wextra -Werror
+            -Wno-unused-parameter
+            -Wno-unused-function
+        )
+#    Cmake 3.17 or later
+#    target_link_directories(${TARGETNAME}
+#            PRIVATE "${PROJECT_BINARY_DIR}/lib"
+#            )
+    set_target_properties(${TARGETNAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY
+            "${PROJECT_BINARY_DIR}/lib")
+endfunction()
+
+set(defualt_generated_library_path "${PROJECT_BINARY_DIR}/lib")
+
+function(link_generated_library TARGETNAME LIBNAME)
+    include_directories(${defualt_generated_library_path})
+    target_link_libraries(${TARGETNAME} PRIVATE ${LIBNAME})
+endfunction()
+
+# =====================================================================================
+
+
 # include directories
 include_directories(${CMAKE_INCLUDE_PATH})
 include_directories("include")
@@ -88,8 +132,8 @@ add_subdirectory(project1)
 add_subdirectory(project2)
 
 # JSON targets.
-add_subdirectory("3rdparty/jsoncpp"
-    ${CMAKE_CURRENT_BINARY_DIR}/jsoncpp-build
-    EXCLUDE_FROM_ALL)
-
-target_link_libraries(${LIB_NAME} jsoncpp_lib)
+#add_subdirectory("3rdparty/jsoncpp"
+#    ${CMAKE_CURRENT_BINARY_DIR}/jsoncpp-build
+#    EXCLUDE_FROM_ALL)
+#
+#target_link_libraries(${LIB_NAME} jsoncpp_lib)
