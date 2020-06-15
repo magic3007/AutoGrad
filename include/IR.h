@@ -337,6 +337,16 @@ class Expr : public Ref<const ExprNode> {
 
     Expr(const Expr &&other) : Ref<const ExprNode>(other.real_ptr()) {}
 
+    Expr &operator =(Expr &other){
+      Ref<const ExprNode>::operator=(other);
+      return *this;
+    }
+
+    Expr &operator =(Expr &&other) noexcept {
+      Ref<const ExprNode>::operator=(std::move(other));
+      return *this;
+    }
+
     template<typename U,
                 typename std::enable_if<std::is_base_of<ExprNode, U>::value>::type* = nullptr>
     Expr(Ref<const U> &other) : Ref<const ExprNode>(other) {}
