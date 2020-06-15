@@ -89,7 +89,9 @@ void IRPrinter::visit(Ref<const Binary> op) {
     } else if (op->op_type == BinaryOpType::Mul) {
         oss << " * ";
     } else if (op->op_type == BinaryOpType::Div) {
-        oss << " / ";
+      oss << " / ";
+    } else if (op->op_type == BinaryOpType::IntDiv){
+      oss << " // ";
     } else if (op->op_type == BinaryOpType::Mod) {
         oss << " % ";
     } else if (op->op_type == BinaryOpType::And) {
