@@ -15,5 +15,6 @@ endfunction()
 include_directories(..)
 
 add_executable(Google_Tests_test_polisher IRPolisherTest.cpp)
-link_generated_library(Google_Tests_test_polisher parser autodiff)
+link_generated_library(Google_Tests_test_polisher parser)
+link_generated_library(Google_Tests_test_polisher autodiff)
 link_google_test_library(Google_Tests_test_polisher)

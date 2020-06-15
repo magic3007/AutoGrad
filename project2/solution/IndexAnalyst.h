@@ -37,7 +37,7 @@ using std::string;
 
 class IndexAnalyst : public IRVisitor{
 public:
-  map<Expr> operator ()(const Group &group);
+  map<string, Expr> operator ()(const Stmt &stmt);
 protected:
   virtual void visit(Ref<const Move> op) override;
   virtual void visit(Ref<const Var> op) override;

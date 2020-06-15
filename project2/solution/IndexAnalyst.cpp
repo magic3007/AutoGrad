@@ -26,12 +26,12 @@ SOFTWARE.
 #include "utils/aixlog.hpp"
 
 
-vector<Expr> IndexAnalyst::operator()(const Group &group) {
+map<string, Expr> IndexAnalyst::operator()(const Stmt &stmt) {
   domains_.clear();
   index_types_.clear();
   is_rhs = false;
-  group.visit_group(this);
-  vector<Expr> rv{};
+  stmt.visit_stmt(this);
+  map<string, Expr> rv{};
   Type index_t = Type::int_scalar(32);
   for(auto &iter : domains_){
     auto index_name = iter.first;
@@ -39,7 +39,7 @@ vector<Expr> IndexAnalyst::operator()(const Group &group) {
     auto index_type = index_types_[index_name];
     auto dom = Dom::make(index_t, 0, upper_bound);
     auto index = Index::make(index_t, index_name, dom, index_type);
-    rv.push_back(index);
+    rv.emplace(index_name, index);
   }
   return rv;
 }
