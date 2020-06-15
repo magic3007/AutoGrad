@@ -30,6 +30,8 @@ SOFTWARE.
 #include "parser.h"
 #include <string>
 
+namespace base_test {
+
 using namespace Boost::Internal;
 using ::testing::TestWithParam;
 using ::testing::Values;
@@ -89,6 +91,8 @@ string get_case9_text(){
 
 string get_case10_text(){
   return "A<8, 8>[i, j] = (B<10, 8>[i, j] + B<10, 8>[i + 1, j] + B<10, 8>[i + 2, j]) / 3.0;";
+}
+
 }
 
 #endif // BOOST_BASETEST_H

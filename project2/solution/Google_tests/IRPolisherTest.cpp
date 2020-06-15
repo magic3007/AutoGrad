@@ -8,6 +8,7 @@
 
 namespace{
 
+using namespace base_test;
 using namespace Boost::Internal;
 using std::vector;
 
