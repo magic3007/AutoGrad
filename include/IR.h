@@ -29,7 +29,6 @@
 #include <string>
 
 #include "type.h"
-#include "arith.h"
 #include "debug.h"
 
 namespace Boost {
@@ -51,7 +50,9 @@ class Ref {
 
     Ref(Ref<T> &other) : ptr(other.ptr) {}
 
-    Ref(Ref<T> &&other) : ptr(std::move(other.ptr)) {}
+    Ref(const Ref<T> &other) : ptr(other.ptr) {}
+
+    Ref(Ref<T> &&other)  noexcept : ptr(std::move(other.ptr)) {}
 
     /**
      * allow constructing from sub-class
