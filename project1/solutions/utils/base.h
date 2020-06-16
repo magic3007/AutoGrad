@@ -5,6 +5,8 @@
 #ifndef BOOST_BASE_H
 #define BOOST_BASE_H
 
+#include <functional>
+
 #define DISALLOW_COPY_AND_ASSIGN(ClassName) \
   ClassName(const ClassName&) = delete; \
   ClassName& operator =(const ClassName&) = delete

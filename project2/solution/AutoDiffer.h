@@ -25,15 +25,18 @@ SOFTWARE.
 #ifndef BOOST_AUTODIFFER_H
 #define BOOST_AUTODIFFER_H
 
-#include "IRMutator.h"
+#include "IRVisitor.h"
+#include "arith.h"
 #include <string>
 #include <stack>
+#include <vector>
 
 using namespace Boost::Internal;
 using std::string;
 using std::stack;
+using std::vector;
 
-class AutoDiffer : public  IRMutator{
+class AutoDiffer : public  IRVisitor{
 public:
   /**
    *
@@ -45,12 +48,13 @@ public:
   Stmt operator ()(const Expr &expr, const string &grad_to_str,
                   const Expr &differential);
 protected:
-  virtual Expr visit(Ref<const IntImm>) override;
-  virtual Expr visit(Ref<const FloatImm>) override;
-  virtual Expr visit(Ref<const Binary>) override;
-  virtual Expr visit(Ref<const Var>) override;
+  void visit(Ref<const Binary>) override;
+  void visit(Ref<const Var>) override;
 private:
+  string grad_to_str_;
   stack<Expr> differentials_stack_;
+  vector<Expr> new_grad_to_indexes_;
+  vector<Expr> results;
 };
 
 #endif // BOOST_AUTODIFFER_H

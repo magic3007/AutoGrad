@@ -89,16 +89,16 @@ private:
 
 Stmt AutoDiffer::operator()(const Expr &expr, const string &grad_to_str,
                             const Expr &differential) {
+  grad_to_str_ = grad_to_str;
   VarCollector var_collector;
-  auto grad_to_var = var_collector(expr, grad_to_str);
 
+  auto grad_to_var = var_collector(expr, grad_to_str);
   /**
    * create new indexes, whose quantity is identical to that
    * of |grad_to| variable.
    */
   auto shape =  grad_to_var->shape;
   auto indexes_quantity = shape.size();
-  vector<Expr> new_indexes{};
   // FIXME: ensure that such new indexes will not conflict with existing indexes.
   string new_index_prefix = "z_";
   Type index_type = Type::int_scalar(32);
@@ -118,55 +118,40 @@ Stmt AutoDiffer::operator()(const Expr &expr, const string &grad_to_str,
 
   while (!differentials_stack_.empty())
     differentials_stack_.pop();
+  results.clear();
   differentials_stack_.emplace(differential);
-  auto differentiated_expr = expr.mutate_expr(this);
+  expr.visit_expr(this);
 
   return Stmt();
 }
 
-Expr AutoDiffer::visit(Ref<const IntImm> op) {
-  return IntImm::make(op->type(), 0);
-}
 
-Expr AutoDiffer::visit(Ref<const FloatImm> op) {
-  return FloatImm::make(op->type(), 0.0);
-}
-
-Expr AutoDiffer::visit(Ref<const Binary> op){
-  Expr diff_a, diff_b, diff_rv;
+void AutoDiffer::visit(Ref<const Binary> op){
   if(op->op_type == BinaryOpType::Add){
-    diff_a = mutate(op->a);
-    diff_b = mutate(op->b);
-    diff_rv = SimplifiedAddition(diff_a, diff_b);
+    (op->a).visit_expr(this);
+    (op->b).visit_expr(this);
   }else if(op->op_type == BinaryOpType::Sub){
-    diff_a = mutate(op->a);
-    diff_b = mutate(op->b);
-    if(IsExprEqualZero(diff_b)) {
-      diff_rv = diff_a;
-    }else if (IsExprEqualZero(diff_a)){
-      diff_rv = Unary::make(diff_b->type(), UnaryOpType::Neg, diff_b);
-      diff_rv = Bracket::make(diff_rv);
-    }else{
-      // FIXME: use expression |diff_a|'s type by default
-      diff_rv = Binary::make(diff_a->type(), BinaryOpType::Sub, diff_a ,diff_b);
-    }
+
+    (op->a).visit_expr(this);
+
+    auto current_diff = differentials_stack_.top();
+    auto new_differential = SimplifiedNegation(current_diff);
+    differentials_stack_.emplace(new_differential);
+    (op->b).visit_expr(this);
+    differentials_stack_.pop();
+
   }else if(op->op_type == BinaryOpType::Mul){
     auto current_diff = differentials_stack_.top();
-    // FIXME: use expression |current_diff|'s type by default
 
-    auto new_differential = Binary::make(current_diff->type(),
-      BinaryOpType::Mul, op->b, current_diff);
-    diff_a = mutate(op->a);
+    auto new_differential = SimplifiedMultiplication(op->b, current_diff);
     differentials_stack_.emplace(new_differential);
+    (op->a).visit_expr(this);
     differentials_stack_.pop();
 
-    new_differential = Binary::make(current_diff->type(),
-      BinaryOpType::Mul, op->a, current_diff);
-    diff_b = mutate(op->b);
+    new_differential = SimplifiedMultiplication(op->a, current_diff);
     differentials_stack_.emplace(new_differential);
+    (op->b).visit_expr(this);
     differentials_stack_.pop();
-
-    diff_rv = SimplifiedAddition(diff_a, diff_b);
 
   }else if (op->op_type == BinaryOpType::Div){
     /**
@@ -174,22 +159,26 @@ Expr AutoDiffer::visit(Ref<const Binary> op){
      * However, this code could be modified to support the case where the denominator
      * consists of variable with ease. :)
      */
-    LOG(ERROR) << COND(op->b.as<FloatImm>()!=nullptr &&
-        op->b.as<IntImm>()!=nullptr &&
-        op->b.as<UIntImm>()!=nullptr)
+    LOG(ERROR) << COND(op->b.as<FloatImm>()==nullptr &&
+        op->b.as<IntImm>()==nullptr &&
+        op->b.as<UIntImm>()==nullptr)
                << "We only support the situation " \
                   "where the denominator is an immediate currently." << std::endl;
 
     auto current_diff = differentials_stack_.top();
-    // FIXME: use expression |current_diff|'s type by default
 
-    auto new_differential = Binary::make(current_diff->type(),
-      BinaryOpType::Div, current_diff, op->b);
-    diff_rv = mutate(op->a);
+    // FIXME: use expression |current_diff|'s type by default
+    auto new_differential = SimplifiedDivision(current_diff, op->b);
     differentials_stack_.emplace(new_differential);
+    (op->a).visit_expr(this);
     differentials_stack_.pop();
-      }else{
+  }else{
     LOG(ERROR) << "Unsupported Binary operation." << std::endl;
   }
-  return diff_rv;
+}
+
+void AutoDiffer::visit(Ref<const Var> op) {
+  if(op->name != grad_to_str_){
+    return;
+  }
 }
