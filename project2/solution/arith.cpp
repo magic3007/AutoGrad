@@ -35,7 +35,7 @@ RefMatrixRow MatrixRow::make(const vector<int> &coefficients, const Expr &rhs) {
 }
 
 RefMatrixRow operator+(RefMatrixRow a, RefMatrixRow b) {
-  LOG(DEBUG) << COND(a->n_cols_ == b->n_cols_) << "Mismatch column number"
+  LOG(DEBUG) << COND(a->n_cols_ != b->n_cols_) << "Mismatch column number"
              << std::endl;
   vector<int> new_coefficients(a->n_cols_);
   for (size_t i = 0; i < a->n_cols_; i++) {
@@ -46,7 +46,7 @@ RefMatrixRow operator+(RefMatrixRow a, RefMatrixRow b) {
 }
 
 RefMatrixRow operator-(RefMatrixRow a, RefMatrixRow b) {
-  LOG(DEBUG) << COND(a->n_cols_ == b->n_cols_) << "Mismatch column number"
+  LOG(DEBUG) << COND(a->n_cols_ != b->n_cols_) << "Mismatch column number"
              << std::endl;
   vector<int> new_coefficients(a->n_cols_);
   for (size_t i = 0; i < a->n_cols_; i++) {
@@ -120,24 +120,24 @@ ImplGaussianEliminationMethod::operator()(RefMatrix &matrix,
     }
     last_main_col = i;
     main_row[i] = current_row;
+    for(int j = current_row + 1; j < n_rows; j++){
+      while(rows[j]->get(i) != 0){
+        int32_t t = rows[j]->get(i) / rows[current_row]->get(i);
+        rows[j] = rows[j] - rows[current_row] * t;
+        if (rows[j]->get(i) != 0)
+          std::swap(rows[current_row], rows[j]);
+      }
+    }
     if(rows[current_row]->get(i) < 0){
       rows[current_row] = - rows[current_row];
     }
     if(rows[current_row]->get(i) == 1){
-      for(int j  = 0; j < n_rows; j++){
-        if (j != current_row) {
+      for(int j  = 0; j < current_row; j++){
+        if (rows[j]->get(i) != 0) {
           int32_t t = rows[j]->get(i);
           rows[j] = rows[j] - rows[current_row] * t;
         }
       }
-    }else{
-       for(int j = current_row + 1; j < n_rows; j++){
-         while(rows[j]->get(i) != 0){
-            int32_t t = rows[current_row]->get(i) / rows[j]->get(i);
-            rows[current_row] = rows[current_row] - rows[j] * t;
-            std::swap(rows[current_row], rows[j]);
-         }
-       }
     }
     current_row ++;
   }
@@ -149,29 +149,34 @@ ImplGaussianEliminationMethod::operator()(RefMatrix &matrix,
       rows[j]->rhs_, Expr(int32_t(0))));
   }
 
-  // free variables
-  for(int i = last_main_col + 1; i < n_cols; i++){
-    auto index = indexes[i].as<Index>();
-    auto index_type = Type::int_scalar(32);
-    solutions[i] = Index::make(index_type, index->name, index->dom, IndexType::Reduce);
-  }
-
-  for(int i = last_main_col ; i >=0 ; i--) if (!is_independent_variable[i]){
-    auto p = main_row[i];
-    Expr e = rows[p]->rhs_;
-    for(int k = i + 1; i < n_cols; i++) if(rows[p]->get(k)!=0){
-        LOG(DEBUG) << COND(!solutions[k].defined()) << "Error: Gaussian Elimination Method" << std::endl;
-        auto temp = SimplifiedMultiplication(solutions[k], Expr(rows[p]->get(k)));
-        e = SimplifiedSubtraction(e, temp);
-      }
-    e = SimplifiedDivision(e, Expr(int32_t(rows[p]->get(i))));
-    solutions[i] = e;
-    auto dom = (indexes[i].as<Index>()->dom).as<Dom>();
-    auto begin = dom->begin;
-    auto end = SimplifiedAddition(dom->begin, dom->extent);
-    auto compare_type = Type::int_scalar(32);
-    constraints.push_back(Compare::make(compare_type, CompareOpType::LE, begin, e));
-    constraints.push_back(Compare::make(compare_type, CompareOpType::LT, e, end));
+  for (int i = n_cols - 1; i >= 0 ; i--) {
+    if (is_independent_variable[i] || i > last_main_col) {
+      // independent variable or free variable
+      auto index = indexes[i].as<Index>();
+      auto index_type = Type::int_scalar(32);
+      solutions[i] = Index::make(index_type, index->name, index->dom, IndexType::Reduce);
+    } else {
+      auto p = main_row[i];
+      Expr e = rows[p]->rhs_;
+      for (int k = i + 1; k < n_cols; k++)
+        if (rows[p]->get(k) != 0) {
+          LOG(DEBUG) << COND(!solutions[k].defined())
+                     << "Error: Gaussian Elimination Method" << std::endl;
+          auto temp =
+              SimplifiedMultiplication(solutions[k], Expr(rows[p]->get(k)));
+          e = SimplifiedSubtraction(e, temp);
+        }
+      e = SimplifiedDivision(e, Expr(int32_t(rows[p]->get(i))));
+      solutions[i] = e;
+      auto dom = (indexes[i].as<Index>()->dom).as<Dom>();
+      auto begin = dom->begin;
+      auto end = SimplifiedAddition(dom->begin, dom->extent);
+      auto compare_type = Type::int_scalar(32);
+      constraints.push_back(
+          Compare::make(compare_type, CompareOpType::LE, begin, e));
+      constraints.push_back(
+          Compare::make(compare_type, CompareOpType::LT, e, end));
+    }
   }
 
   return PackedResult{solutions, constraints};
