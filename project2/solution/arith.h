@@ -56,6 +56,8 @@ class MatrixRow{
     static RefMatrixRow make(const vector<int> &coefficients, const Expr &rhs);
 
     int get(size_t i) const ;
+    vector<int> get_coefficients(){return coefficients_;}
+    Expr get_rhs() {return rhs_;}
     friend RefMatrixRow operator+(RefMatrixRow a, RefMatrixRow b);
     friend RefMatrixRow operator-(RefMatrixRow a, RefMatrixRow b);
     friend RefMatrixRow operator-(RefMatrixRow a);
@@ -78,6 +80,9 @@ class Matrix{
         rows_(std::move(rows)){}
     static RefMatrix make(const vector<vector<int>> &coefficients, vector<Expr> all_rhs);
     friend ImplGaussianEliminationMethod;
+    size_t get_n_rows() const {return n_rows_;}
+    size_t get_n_cols() const {return n_cols_;}
+    vector<RefMatrixRow> get_rows(){ return rows_; }
   private:
     size_t n_rows_, n_cols_;
     vector<RefMatrixRow> rows_;
@@ -86,6 +91,7 @@ class Matrix{
 class ImplGaussianEliminationMethod{
   DISALLOW_COPY_AND_ASSIGN(ImplGaussianEliminationMethod);
   public:
+    explicit ImplGaussianEliminationMethod()= default;
     class PackedResult{
     public:
       vector<Expr> solutions;

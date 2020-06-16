@@ -45,6 +45,7 @@ class IRPrinter : public IRVisitor {
     std::string print(const Expr&);
     std::string print(const Stmt&);
     std::string print(const Group&);
+    void set_print_range(bool _print_range){print_range = _print_range;}
 
     void print_indent() {
         for (int i = 0; i < indent; ++i) oss << " ";
