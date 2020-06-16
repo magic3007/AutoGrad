@@ -24,40 +24,14 @@ SOFTWARE.
 
 #include "AutoDiffer.h"
 #include "IRVisitor.h"
+#include "IRHelperFunc.h"
+
 #include <string>
 #include <vector>
 #include "utils/aixlog.hpp"
 
 using std::string;
 using std::vector;
-
-
-// ================================================
-// healper functions
-// ================================================
-
-template <typename T>
-string ToString(const T &val){
-  std::stringstream ss;
-  ss << val;
-  return ss.str();
-}
-
-bool IsExprEqualZero(const Expr &expr){
-  auto e = expr.as<IntImm>();
-  return e!=nullptr && e->value() == 0;
-}
-
-Expr SimplifiedAddition(const Expr &a, const Expr &b){
-  if(IsExprEqualZero(a)){
-    return b;
-  }else if (IsExprEqualZero(b)){
-    return a;
-  }else{
-    // FIXME: use expression |a|'s type by default
-    return Binary::make(a->type(), BinaryOpType::Add, a ,b);
-  }
-}
 
 // ================================================
 
@@ -108,7 +82,7 @@ Stmt AutoDiffer::operator()(const Expr &expr, const string &grad_to_str,
     auto dom = Dom::make(index_type,
                          IntImm::make(index_type, 0),
                          IntImm::make(index_type, extent));
-    new_indexes.push_back(Index::make(
+    new_grad_to_indexes_.push_back(Index::make(
         index_type,
         new_index_name,
         dom,
