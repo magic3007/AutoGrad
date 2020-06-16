@@ -55,7 +55,7 @@ Expr SimplifiedNegation(const Expr &a){
   if(IsExprEqualZero(a)){
     return a;
   }else{
-    return Bracket::make(Unary::make(a->type(), UnaryOpType::Neg, a));
+    return Bracket::make(Unary::make(a->type(), UnaryOpType::Neg, Bracket::make(a)));
   }
 }
 
@@ -71,14 +71,10 @@ Expr SimplifiedAddition(const Expr &a, const Expr &b){
 }
 
 Expr SimplifiedSubtraction(const Expr &a, const Expr &b){
-  if(IsExprEqualZero(a)){
-    return SimplifiedNegation(b);
-  }else if (IsExprEqualZero(b)){
-    return a;
-  }else{
-    // FIXME: use expression |a|'s type by default
-    return Binary::make(a->type(), BinaryOpType::Sub, a ,b);
-  }
+  if(IsExprEqualZero(a)) return SimplifiedNegation(b);
+  if (IsExprEqualZero(b)) return a;
+  // FIXME: use expression |a|'s type by default
+  return Binary::make(a->type(), BinaryOpType::Sub, a ,Bracket::make(b));
 }
 
 Expr SimplifiedMultiplication(const Expr &a, const Expr &b){
@@ -89,7 +85,7 @@ Expr SimplifiedMultiplication(const Expr &a, const Expr &b){
   if (IsExprEqualIntImm(b, -1)) return SimplifiedNegation(a);
 
   // FIXME: use expression |a|'s type by default
-  return Binary::make(a->type(), BinaryOpType::Mul, a ,b);
+  return Binary::make(a->type(), BinaryOpType::Mul, Bracket::make(a) ,Bracket::make(b));
 }
 
 Expr SimplifiedDivision(const Expr &a, const Expr &b){
@@ -98,7 +94,7 @@ Expr SimplifiedDivision(const Expr &a, const Expr &b){
   if (IsExprEqualIntImm(b, -1)) return SimplifiedNegation(a);
 
   // FIXME: use expression |a|'s type by default
-  return Binary::make(a->type(), BinaryOpType::Div, a ,b);
+  return Binary::make(a->type(), BinaryOpType::Div, Bracket::make(a) ,Bracket::make(b));
 }
 
 #define BOOST_IRHELPERFUNC_H
