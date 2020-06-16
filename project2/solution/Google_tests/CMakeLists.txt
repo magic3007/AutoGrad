@@ -18,3 +18,7 @@ add_executable(Google_Tests_test_polisher IRPolisherTest.cpp)
 link_generated_library(Google_Tests_test_polisher parser)
 link_generated_library(Google_Tests_test_polisher autodiff)
 link_google_test_library(Google_Tests_test_polisher)
+
+add_executable(Google_Tests_test_arith ArithTest.cpp)
+link_generated_library(Google_Tests_test_arith autodiff)
+link_google_test_library(Google_Tests_test_arith)
