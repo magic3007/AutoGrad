@@ -30,11 +30,13 @@ SOFTWARE.
 #include <string>
 #include <stack>
 #include <vector>
+#include <map>
 
 using namespace Boost::Internal;
 using std::string;
 using std::stack;
 using std::vector;
+using std::map;
 
 class AutoDiffer : public  IRVisitor{
 public:
@@ -52,8 +54,13 @@ protected:
   void visit(Ref<const Var>) override;
 private:
   string grad_to_str_;
-  stack<Expr> differentials_stack_;
+  map<string,Expr> str2old_indexes_;
+  map<string,Expr> str2vars_;
+  map<string,int> str2matrix_column_;
+  vector<Expr> matrix_column2old_indexes_;
+
   vector<Expr> new_grad_to_indexes_;
+  stack<Expr> differentials_stack_;
   vector<Expr> results;
 };
 

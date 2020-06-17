@@ -28,49 +28,138 @@ SOFTWARE.
 
 #include <string>
 #include <vector>
+#include <map>
 #include "utils/aixlog.hpp"
 
 using std::string;
 using std::vector;
+using std::map;
+
+// ================================================
+
+class IndexCollector : public IRVisitor {
+public:
+  map<string, Expr> operator()(const Expr &expr) {
+    str2index_.clear();
+    expr.visit_expr(this);
+    return str2index_;
+  }
+
+protected:
+  void visit(Ref<const Index> op) override {
+    string name = op->name;
+    if (str2index_.find(name) == str2index_.end()) {
+      str2index_[name] = op;
+    }
+  }
+
+private:
+  map<string, Expr> str2index_;
+};
 
 // ================================================
 
 class VarCollector : public IRVisitor {
 public:
-  Ref<const Var> operator()(const Expr &expr, const string &name) {
-    name_ = name;
-    rv_.set_ptr(nullptr);
-    have_collected_ = false;
+  map<string, Expr> operator()(const Expr &expr) {
+    str2var_.clear();
     expr.visit_expr(this);
-    return rv_;
+    return str2var_;
   }
 
 protected:
-  void visit(Ref<const Var> op) {
-    if (!have_collected_ && op->name == name_) {
-      have_collected_ = true;
-      rv_ = op;
+  void visit(Ref<const Var> op) override {
+    string name = op->name;
+    if (str2var_.find(name) == str2var_.end()) {
+      str2var_[name] = op;
     }
   }
 
 private:
-  string name_;
-  bool have_collected_ = false;
-  Ref<const Var> rv_;
+  map<string, Expr> str2var_;
 };
 
 // ================================================
 
+class CoeffiExtractor : public IRVisitor{
+  public:
+    class PackedResult{
+      public:
+        vector<int> coefficients;
+        int imm;
+    };
+    PackedResult operator()(const Expr &expr, int n_cols,
+                            const map<string,int> &str2matrix_column){
+      str2matrix_column_ = str2matrix_column;
+      imm_ = 0;
+      coefficients_.resize(n_cols, 0);
+      expr.visit_expr(this, 1);
+      return {coefficients_, imm_};
+    }
+  protected:
+    void visit(Ref<const IntImm> op, int argu) override{
+      imm_ += argu * op->value();
+    }
+
+    void visit(Ref<const Var> op, int argu) override{
+      auto column = str2matrix_column_[op->name];
+      coefficients_[column] += argu;
+    }
+
+    void visit(Ref<const Binary> op, int argu) override{
+      if(op->op_type == BinaryOpType::Add){
+        (op->a).visit_expr(this, argu);
+        (op->b).visit_expr(this, argu);
+      }else if(op->op_type == BinaryOpType::Sub){
+        (op->a).visit_expr(this, argu);
+        (op->b).visit_expr(this, -argu);
+      }else if(op->op_type == BinaryOpType::Mul){
+        if(op->a.as<IntImm>() != nullptr && op->b.as<Var>() != nullptr){
+          (op->b).visit_expr(this, argu * op->a.as<IntImm>()->value());
+        }else if(op->b.as<IntImm>() != nullptr && op->a.as<Var>() != nullptr){
+          (op->a).visit_expr(this, argu * op->b.as<IntImm>()->value());
+        }else{
+          LOG(ERROR) << "Only support linear index expressions!" << std::endl;
+        }
+      }else{
+        LOG(ERROR) << "Only support linear index expressions!" << std::endl;
+      }
+    }
+
+  private:
+    map<string,int> str2matrix_column_;
+    vector<int> coefficients_;
+    int imm_;
+};
+// ================================================
+
+
 Stmt AutoDiffer::operator()(const Expr &expr, const string &grad_to_str,
                             const Expr &differential) {
   grad_to_str_ = grad_to_str;
+  IndexCollector index_collector;
   VarCollector var_collector;
 
-  auto grad_to_var = var_collector(expr, grad_to_str);
+  str2old_indexes_ = index_collector(expr);
+  str2vars_ = var_collector(expr);
+
+  str2matrix_column_.clear();
+  matrix_column2old_indexes_.clear();
+  {
+    int counter = 0;
+    for(auto &iter : str2old_indexes_){
+      str2matrix_column_[iter.first] = counter++;
+      matrix_column2old_indexes_.push_back(iter.second);
+    }
+  }
+
+  auto grad_to_var = str2vars_[grad_to_str].as<Var>();
+
   /**
    * create new indexes, whose quantity is identical to that
    * of |grad_to| variable.
    */
+  new_grad_to_indexes_.clear();
   auto shape =  grad_to_var->shape;
   auto indexes_quantity = shape.size();
   // FIXME: ensure that such new indexes will not conflict with existing indexes.
@@ -90,9 +179,9 @@ Stmt AutoDiffer::operator()(const Expr &expr, const string &grad_to_str,
         ));
   }
 
-  while (!differentials_stack_.empty())
-    differentials_stack_.pop();
+  while (!differentials_stack_.empty()) differentials_stack_.pop();
   results.clear();
+
   differentials_stack_.emplace(differential);
   expr.visit_expr(this);
 
@@ -105,18 +194,14 @@ void AutoDiffer::visit(Ref<const Binary> op){
     (op->a).visit_expr(this);
     (op->b).visit_expr(this);
   }else if(op->op_type == BinaryOpType::Sub){
-
     (op->a).visit_expr(this);
-
     auto current_diff = differentials_stack_.top();
     auto new_differential = SimplifiedNegation(current_diff);
     differentials_stack_.emplace(new_differential);
     (op->b).visit_expr(this);
     differentials_stack_.pop();
-
   }else if(op->op_type == BinaryOpType::Mul){
     auto current_diff = differentials_stack_.top();
-
     auto new_differential = SimplifiedMultiplication(op->b, current_diff);
     differentials_stack_.emplace(new_differential);
     (op->a).visit_expr(this);
@@ -140,7 +225,6 @@ void AutoDiffer::visit(Ref<const Binary> op){
                   "where the denominator is an immediate currently." << std::endl;
 
     auto current_diff = differentials_stack_.top();
-
     // FIXME: use expression |current_diff|'s type by default
     auto new_differential = SimplifiedDivision(current_diff, op->b);
     differentials_stack_.emplace(new_differential);
@@ -155,4 +239,5 @@ void AutoDiffer::visit(Ref<const Var> op) {
   if(op->name != grad_to_str_){
     return;
   }
+
 }
