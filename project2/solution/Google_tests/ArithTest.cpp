@@ -177,6 +177,14 @@ protected:
     return oss.str();
   }
 
+  static string print_expr_vector(const map<string, Expr> &vec) {
+    std::ostringstream oss;
+    IRPrinter printer;
+    for (const auto& iter : vec)
+      oss << iter.first << " : " << printer.print(iter.second) << std::endl;
+    return oss.str();
+  }
+
   static string print_matrix(RefMatrix matrix) {
     std::ostringstream oss;
     auto n_rows = matrix->get_n_rows();
