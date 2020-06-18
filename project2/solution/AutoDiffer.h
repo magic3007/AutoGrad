@@ -47,7 +47,7 @@ public:
    * @param differential differential expression w.r.t. current expression |expr|
    * @return differential statement w.r.t. variable |grad_to_str|
    */
-  Stmt operator ()(const Expr &expr, const string &grad_to_str,
+  Group operator ()(const Expr &expr, const string &grad_to_str,
                   const Expr &differential);
 protected:
   void visit(Ref<const Binary>) override;
@@ -60,8 +60,9 @@ private:
   vector<Expr> matrix_column2old_indexes_;
 
   vector<Expr> new_grad_to_indexes_;
+  Expr new_grad_to_var_;
   stack<Expr> differentials_stack_;
-  vector<Expr> results;
+  vector<Stmt> results;
 };
 
 #endif // BOOST_AUTODIFFER_H

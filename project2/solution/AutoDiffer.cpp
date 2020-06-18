@@ -45,6 +45,11 @@ public:
     expr.visit_expr(this);
     return str2index_;
   }
+  map<string, Expr> operator()(const Stmt &expr) {
+    str2index_.clear();
+    expr.visit_stmt(this);
+    return str2index_;
+  }
 
 protected:
   void visit(Ref<const Index> op) override {
@@ -89,10 +94,10 @@ class CoeffiExtractor : public IRVisitor{
         vector<int> coefficients;
         int imm;
     };
-    PackedResult operator()(const Expr &expr, int n_cols,
-                            const map<string,int> &str2matrix_column){
+    PackedResult operator()(const Expr &expr, const map<string,int> &str2matrix_column){
       str2matrix_column_ = str2matrix_column;
       imm_ = 0;
+      int n_cols = str2matrix_column_.size();
       coefficients_.resize(n_cols, 0);
       expr.visit_expr(this, 1);
       return {coefficients_, imm_};
@@ -135,7 +140,7 @@ class CoeffiExtractor : public IRVisitor{
 // ================================================
 
 
-Stmt AutoDiffer::operator()(const Expr &expr, const string &grad_to_str,
+Group AutoDiffer::operator()(const Expr &expr, const string &grad_to_str,
                             const Expr &differential) {
   grad_to_str_ = grad_to_str;
   IndexCollector index_collector;
@@ -179,14 +184,16 @@ Stmt AutoDiffer::operator()(const Expr &expr, const string &grad_to_str,
         IndexType::Spatial
         ));
   }
-
+  auto new_grad_to_var_name = "d" + grad_to_var->name;
+  new_grad_to_var_ = Var::make(grad_to_var->type(), new_grad_to_var_name,
+                               new_grad_to_indexes_, grad_to_var->shape);
   while (!differentials_stack_.empty()) differentials_stack_.pop();
   results.clear();
 
   differentials_stack_.emplace(differential);
   expr.visit_expr(this);
-
-  return Stmt();
+  return Kernel::make("grad_to_" + grad_to_var->name, {}, {},
+                      results, KernelType::CPU);
 }
 
 
@@ -240,5 +247,38 @@ void AutoDiffer::visit(Ref<const Var> op) {
   if(op->name != grad_to_str_){
     return;
   }
+  CoeffiExtractor coeffi_extractor;
 
+  int n_cols = str2matrix_column_.size();
+  vector<vector<int>> coefficients{};
+  vector<Expr> rhs{};
+  for(int i = 0; i < n_cols; i++){
+     auto rv = coeffi_extractor(op->args[i], str2matrix_column_);
+     rhs.push_back(SimplifiedSubtraction(new_grad_to_indexes_[i], Expr(int32_t(rv.imm))));
+     coefficients.push_back(rv.coefficients);
+  }
+  using namespace arithmetic::gaussian_elimination;
+  auto matrix = Matrix::make(coefficients, rhs);
+  ImplGaussianEliminationMethod impl_gaussian_elimination_method;
+  auto rv = impl_gaussian_elimination_method(matrix, matrix_column2old_indexes_);
+
+  IndexReplacer index_replacer;
+  auto current_diff = index_replacer(differentials_stack_.top(), rv.solutions);
+
+  if(!rv.constraints.empty()){
+    Expr cond = rv.constraints[0];
+    for(size_t i = 1; i < rv.constraints.size(); i++){
+      auto cond_type = Type::int_scalar(32);
+      cond = Binary::make(cond_type, BinaryOpType::And, cond, rv.constraints[i]);
+    }
+    current_diff = Select::make(current_diff->type(), cond, current_diff, Expr(int32_t(0)));
+  }
+  auto diff_stmt = Move::make(new_grad_to_var_,current_diff, MoveType::MemToMem);
+  IndexCollector index_collector;
+  map<string, Expr> new_index_map = index_collector(diff_stmt);
+  vector<Expr> new_index_list{};
+  new_index_list.reserve(new_index_map.size());
+  for(auto& iter : new_index_map) new_index_list.push_back(iter.second);
+  diff_stmt = LoopNest::make(new_index_list, {diff_stmt});
+  results.push_back(diff_stmt);
 }
