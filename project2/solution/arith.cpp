@@ -107,7 +107,7 @@ ImplGaussianEliminationMethod::operator()(RefMatrix &matrix,
 
   int current_row = 0;
   int last_main_col = -1;
-  for(int i = 0; i < n_cols; i++){
+  for(int i = 0; i < n_cols && current_row < n_rows; i++){
     int non_zero_row_index = current_row;
     for(int j = current_row; j < n_rows; j++) if(rows[j]->get(i) != 0)
       { non_zero_row_index = j; break; }
