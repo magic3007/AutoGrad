@@ -30,6 +30,7 @@ namespace arithmetic {
 
 namespace gaussian_elimination {
 
+
 RefMatrixRow MatrixRow::make(const vector<int> &coefficients, const Expr &rhs) {
   return std::make_shared<MatrixRow>(coefficients, rhs);
 }
@@ -99,7 +100,7 @@ ImplGaussianEliminationMethod::operator()(RefMatrix &matrix,
   int n_rows = matrix->n_rows_;
   int n_cols = matrix->n_cols_;
   vector<RefMatrixRow> &rows = matrix->rows_;
-  vector<Expr> solutions(n_cols);
+  map<string, Expr> solutions;
   vector<Expr> constraints;
   vector<bool> is_independent_variable(n_cols, false);
   vector<int> main_row(n_cols, 0);
@@ -154,20 +155,22 @@ ImplGaussianEliminationMethod::operator()(RefMatrix &matrix,
       // independent variable or free variable
       auto index = indexes[i].as<Index>();
       auto index_type = Type::int_scalar(32);
-      solutions[i] = Index::make(index_type, index->name, index->dom, IndexType::Reduce);
+      solutions[index->name] = Index::make(index_type, index->name, index->dom, IndexType::Reduce);
     } else {
       auto p = main_row[i];
       Expr e = rows[p]->rhs_;
       for (int k = i + 1; k < n_cols; k++)
         if (rows[p]->get(k) != 0) {
-          LOG(DEBUG) << COND(!solutions[k].defined())
+          string name = indexes[k].as<Index>()->name;
+          LOG(DEBUG) << COND(!solutions[name].defined())
                      << "Error: Gaussian Elimination Method" << std::endl;
           auto temp =
-              SimplifiedMultiplication(solutions[k], Expr(rows[p]->get(k)));
+              SimplifiedMultiplication(solutions[name], Expr(rows[p]->get(k)));
           e = SimplifiedSubtraction(e, temp);
         }
       e = SimplifiedDivision(e, Expr(int32_t(rows[p]->get(i))));
-      solutions[i] = e;
+      string name = indexes[i].as<Index>()->name;
+      solutions[name] = e;
       auto dom = (indexes[i].as<Index>()->dom).as<Dom>();
       auto begin = dom->begin;
       auto end = SimplifiedAddition(dom->begin, dom->extent);

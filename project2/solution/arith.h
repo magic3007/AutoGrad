@@ -29,6 +29,7 @@ SOFTWARE.
 #include "utils/base.h"
 #include <vector>
 #include <string>
+#include <map>
 
 namespace arithmetic {
 
@@ -37,6 +38,7 @@ namespace gaussian_elimination {
 using namespace Boost::Internal;
 using std::vector;
 using std::string;
+using std::map;
 
 /* forward declaration */
 class MatrixRow;
@@ -94,7 +96,7 @@ class ImplGaussianEliminationMethod{
     explicit ImplGaussianEliminationMethod()= default;
     class PackedResult{
     public:
-      vector<Expr> solutions;
+      map<string, Expr> solutions;
       vector<Expr> constraints;
     };
 
