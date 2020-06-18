@@ -25,11 +25,12 @@ SOFTWARE.
 #include "AutoDiffer.h"
 #include "IRVisitor.h"
 #include "IRHelperFunc.h"
+#include "IndexReplacer.h"
+#include "utils/aixlog.hpp"
 
 #include <string>
 #include <vector>
 #include <map>
-#include "utils/aixlog.hpp"
 
 using std::string;
 using std::vector;
