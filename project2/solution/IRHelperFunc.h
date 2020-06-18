@@ -23,6 +23,7 @@ SOFTWARE.
 */
 
 #ifndef BOOST_IRHELPERFUNC_H
+#define BOOST_IRHELPERFUNC_H
 
 #include "IR.h"
 #include <string>
@@ -47,56 +48,16 @@ bool IsExprEqualIntImm(const Expr &expr, T a){
   return e!=nullptr && e->value() == a;
 }
 
-bool IsExprEqualZero(const Expr &expr){
-  return IsExprEqualIntImm(expr, 0);
-}
+bool IsExprEqualZero(const Expr &expr);
 
-Expr SimplifiedNegation(const Expr &a){
-  if(IsExprEqualZero(a)){
-    return a;
-  }else{
-    return Bracket::make(Unary::make(a->type(), UnaryOpType::Neg, Bracket::make(a)));
-  }
-}
+Expr SimplifiedNegation(const Expr &a);
 
-Expr SimplifiedAddition(const Expr &a, const Expr &b){
-  if(IsExprEqualZero(a)){
-    return b;
-  }else if (IsExprEqualZero(b)){
-    return a;
-  }else{
-    // FIXME: use expression |a|'s type by default
-    return Binary::make(a->type(), BinaryOpType::Add, a ,b);
-  }
-}
+Expr SimplifiedAddition(const Expr &a, const Expr &b);
 
-Expr SimplifiedSubtraction(const Expr &a, const Expr &b){
-  if(IsExprEqualZero(a)) return SimplifiedNegation(b);
-  if (IsExprEqualZero(b)) return a;
-  // FIXME: use expression |a|'s type by default
-  return Binary::make(a->type(), BinaryOpType::Sub, a ,Bracket::make(b));
-}
+Expr SimplifiedSubtraction(const Expr &a, const Expr &b);
 
-Expr SimplifiedMultiplication(const Expr &a, const Expr &b){
-  if(IsExprEqualZero(a) || IsExprEqualZero(b)) return Expr(int32_t(0));
-  if (IsExprEqualIntImm(a, 1)) return b;
-  if (IsExprEqualIntImm(b, 1)) return a;
-  if (IsExprEqualIntImm(a, -1)) return SimplifiedNegation(b);
-  if (IsExprEqualIntImm(b, -1)) return SimplifiedNegation(a);
+Expr SimplifiedMultiplication(const Expr &a, const Expr &b);
 
-  // FIXME: use expression |a|'s type by default
-  return Binary::make(a->type(), BinaryOpType::Mul, Bracket::make(a) ,Bracket::make(b));
-}
-
-Expr SimplifiedDivision(const Expr &a, const Expr &b){
-  if(IsExprEqualZero(a)) return Expr(int32_t(0));
-  if (IsExprEqualIntImm(b, 1)) return a;
-  if (IsExprEqualIntImm(b, -1)) return SimplifiedNegation(a);
-
-  // FIXME: use expression |a|'s type by default
-  return Binary::make(a->type(), BinaryOpType::Div, Bracket::make(a) ,Bracket::make(b));
-}
-
-#define BOOST_IRHELPERFUNC_H
+Expr SimplifiedDivision(const Expr &a, const Expr &b);
 
 #endif // BOOST_IRHELPERFUNC_H
