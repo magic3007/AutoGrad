@@ -22,3 +22,8 @@ link_google_test_library(Google_Tests_test_polisher)
 add_executable(Google_Tests_test_arith ArithTest.cpp)
 link_generated_library(Google_Tests_test_arith autodiff)
 link_google_test_library(Google_Tests_test_arith)
+
+add_executable(Google_Tests_test_autodiffer AutoDifferTest.cpp)
+link_generated_library(Google_Tests_test_autodiffer parser)
+link_generated_library(Google_Tests_test_autodiffer autodiff)
+link_google_test_library(Google_Tests_test_autodiffer)
