@@ -7,6 +7,7 @@ add_library(autodiff  STATIC
         IRPolisher.cpp
         AutoDiffer.cpp
         arith.cpp
+        IndexReplacer.cpp
         )
 add_library_config(autodiff)
 target_link_libraries(autodiff ${LIB_NAME})
