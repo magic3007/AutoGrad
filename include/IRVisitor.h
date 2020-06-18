@@ -56,6 +56,7 @@ class IRVisitor {
 
     virtual void visit(Ref<const IntImm>, int);
     virtual void visit(Ref<const Binary>, int);
+    virtual void visit(Ref<const Index>, int);
     virtual void visit(Ref<const Var>, int);
 
    private:

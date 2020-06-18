@@ -249,7 +249,7 @@ void Dom::visit_node(IRVisitor *visitor, int argu) const {
 }
 
 void Index::visit_node(IRVisitor *visitor, int argu) const {
-    visit_node(visitor);
+  return visitor->visit(Ref<const Index>(shared_from_this()), argu);
 }
 
 void LoopNest::visit_node(IRVisitor *visitor, int argu) const {
