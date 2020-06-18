@@ -40,14 +40,10 @@ using std::map;
 
 class IndexCollector : public IRVisitor {
 public:
-  map<string, Expr> operator()(const Expr &expr) {
+
+  map<string, Expr> operator()(const Stmt &stmt) {
     str2index_.clear();
-    expr.visit_expr(this);
-    return str2index_;
-  }
-  map<string, Expr> operator()(const Stmt &expr) {
-    str2index_.clear();
-    expr.visit_stmt(this);
+    stmt.visit_stmt(this);
     return str2index_;
   }
 
@@ -67,9 +63,9 @@ private:
 
 class VarCollector : public IRVisitor {
 public:
-  map<string, Expr> operator()(const Expr &expr) {
+  map<string, Expr> operator()(const Stmt &stmt) {
     str2var_.clear();
-    expr.visit_expr(this);
+    stmt.visit_stmt(this);
     return str2var_;
   }
 
@@ -98,16 +94,18 @@ class CoeffiExtractor : public IRVisitor{
       str2matrix_column_ = str2matrix_column;
       imm_ = 0;
       int n_cols = str2matrix_column_.size();
+      coefficients_.clear();
       coefficients_.resize(n_cols, 0);
       expr.visit_expr(this, 1);
       return {coefficients_, imm_};
     }
   protected:
+
     void visit(Ref<const IntImm> op, int argu) override{
       imm_ += argu * op->value();
     }
 
-    void visit(Ref<const Var> op, int argu) override{
+    void visit(Ref<const Index> op, int argu) override{
       auto column = str2matrix_column_[op->name];
       coefficients_[column] += argu;
     }
@@ -140,14 +138,16 @@ class CoeffiExtractor : public IRVisitor{
 // ================================================
 
 
-Group AutoDiffer::operator()(const Expr &expr, const string &grad_to_str,
-                            const Expr &differential) {
+Group AutoDiffer::operator()(const Stmt &stmt, const string &grad_to_str) {
   grad_to_str_ = grad_to_str;
   IndexCollector index_collector;
   VarCollector var_collector;
 
-  str2old_indexes_ = index_collector(expr);
-  str2vars_ = var_collector(expr);
+  str2old_indexes_ = index_collector(stmt);
+  str2vars_ = var_collector(stmt);
+
+  auto lhs = stmt.as<Move>()->dst.as<Var>();
+  auto differential = Var::make(lhs->type(), "d" + lhs->name, lhs->args, lhs->shape);
 
   str2matrix_column_.clear();
   matrix_column2old_indexes_.clear();
@@ -191,7 +191,7 @@ Group AutoDiffer::operator()(const Expr &expr, const string &grad_to_str,
   results.clear();
 
   differentials_stack_.emplace(differential);
-  expr.visit_expr(this);
+  stmt.as<Move>()->src.visit_expr(this);
   return Kernel::make("grad_to_" + grad_to_var->name, {}, {},
                       results, KernelType::CPU);
 }
@@ -249,10 +249,9 @@ void AutoDiffer::visit(Ref<const Var> op) {
   }
   CoeffiExtractor coeffi_extractor;
 
-  int n_cols = str2matrix_column_.size();
   vector<vector<int>> coefficients{};
   vector<Expr> rhs{};
-  for(int i = 0; i < n_cols; i++){
+  for(size_t i = 0; i < op->args.size(); i++){
      auto rv = coeffi_extractor(op->args[i], str2matrix_column_);
      rhs.push_back(SimplifiedSubtraction(new_grad_to_indexes_[i], Expr(int32_t(rv.imm))));
      coefficients.push_back(rv.coefficients);

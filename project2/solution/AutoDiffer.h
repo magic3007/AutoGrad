@@ -47,8 +47,8 @@ public:
    * @param differential differential expression w.r.t. current expression |expr|
    * @return differential statement w.r.t. variable |grad_to_str|
    */
-  Group operator ()(const Expr &expr, const string &grad_to_str,
-                  const Expr &differential);
+  Group operator ()(const Stmt &stmt, const string &grad_to_str);
+
 protected:
   void visit(Ref<const Binary>) override;
   void visit(Ref<const Var>) override;
