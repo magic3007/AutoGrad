@@ -189,6 +189,10 @@ Group AutoDiffer::operator()(const Stmt &stmt, const string &grad_to_str) {
                                new_grad_to_indexes_, grad_to_var->shape);
   while (!differentials_stack_.empty()) differentials_stack_.pop();
   results.clear();
+  results.push_back(
+             LoopNest::make(new_grad_to_indexes_,
+                 {Move::make(new_grad_to_var_, Expr(int32_t(0)), MoveType::MemToMem)})
+             );
 
   differentials_stack_.emplace(differential);
   stmt.as<Move>()->src.visit_expr(this);
