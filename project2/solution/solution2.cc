@@ -7,6 +7,7 @@
 #include "nlohmann/json.hpp"
 #include "utils/base.h"
 #include "parser.h"
+#include "signPrinter2.h"
 
 using namespace Boost::Internal;
 
@@ -56,8 +57,12 @@ int main(int argc, char *argv[]){
     auto ins = j["ins"];
     auto outs = j["outs"];
     auto type = j["data_type"].get<string>();
+    auto grad_to = j["grad_to"];
+    signPrinter2 sprinter2(ins, outs, type, grad_to);
     Group kernel = parser::ParseFromString(text, 0);
     std::cerr << "Generate successfully!" << std::endl;
+    
+    std::cout << "void " << name.c_str() << sprinter2.print(kernel) << std::endl;
   }
   return 0;
 }
