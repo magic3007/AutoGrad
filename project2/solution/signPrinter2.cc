@@ -4,9 +4,11 @@ namespace Boost {
 
 namespace Internal {
 
-std::string signPrinter2::print(const Group &group) {
+std::map<std::string, std::string> signPrinter2::get(const Group &group) {
 	ranges.clear();
     group.visit_group(this);
+    return ranges;
+    /*
     std::string ret = "(";
     bool first = 1;
     for (size_t i = 0; i < ins.size(); ++ i)
@@ -56,7 +58,9 @@ std::string signPrinter2::print(const Group &group) {
             ret += "(&d"+name+")"+size;   
     }
     ret += ")";
-    return ret;
+    */
+    
+    //return ret;
 }
 
 void signPrinter2::visit(Ref<const Bracket> op) {

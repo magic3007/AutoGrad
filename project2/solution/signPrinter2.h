@@ -15,12 +15,7 @@ namespace Internal {
 class signPrinter2 : public IRPrinter {
    public:
     signPrinter2() : IRPrinter(){}
-    signPrinter2(std::vector<std::string> _ins, std::vector<std::string> _outs, std::string _type, std::vector<std::string> _grad) : IRPrinter() 
-    {
-        ins = _ins;outs=_outs;type=_type;
-        grad = _grad;
-    }
-    std::string print(const Group &);
+    std::map<std::string, std::string> get(const Group &);
 
 
     void visit(Ref<const IntImm>) override;

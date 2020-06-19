@@ -9,6 +9,13 @@
 #include "parser.h"
 #include "signPrinter2.h"
 
+#include "IR.h"
+#include "IRPolisher.h"
+#include "IndexAnalyst.h"
+#include "IRPrinter.h"
+#include "AutoDiffer.h"
+#include "utils/aixlog.hpp"
+
 using namespace Boost::Internal;
 
 using std::string;
@@ -27,6 +34,9 @@ using json = nlohmann::json;
   X(case8) \
   X(case9) \
   X(case10)
+
+std::string generate_sign(const string &text, std::vector<std::string> grad, 
+          std::vector<std::string> _ins, std::vector<std::string> _outs, std::string _type);
 
 int main(int argc, char *argv[]){
   list<tuple<string, string>> testcases = {
@@ -58,11 +68,100 @@ int main(int argc, char *argv[]){
     auto outs = j["outs"];
     auto type = j["data_type"].get<string>();
     auto grad_to = j["grad_to"];
-    signPrinter2 sprinter2(ins, outs, type, grad_to);
+
+
     Group kernel = parser::ParseFromString(text, 0);
     std::cerr << "Generate successfully!" << std::endl;
     
-    std::cout << "void " << name.c_str() << sprinter2.print(kernel) << std::endl;
+    std::cout << "void " << name.c_str() << generate_sign(text, grad_to, ins, outs, type) << std::endl;
   }
   return 0;
+}
+
+
+std::string generate_sign(const string &text, std::vector<std::string> grad, 
+std::vector<std::string> ins, std::vector<std::string> outs, std::string type) 
+{
+   AutoDiffer auto_differ;
+   IRPrinter printer;
+   IndexAnalyst index_analyzer;
+   IRPolisher polisher;
+
+   auto main_stmt = parser::ParseFromString(text, 0).as<Kernel>()
+        ->stmt_list[0];
+   auto domains = index_analyzer(main_stmt);
+   main_stmt = polisher(main_stmt, domains);
+
+/*
+   std::cout << "===============================" << std::endl;
+   std::cout << text << std::endl;
+   std::cout << printer.print(main_stmt) << std::endl;
+   std::cout << "grad_to : " << grad_to_str << std::endl;
+   std::cout << std::endl;
+*/
+    
+    signPrinter2 sprinter2;
+    std::map<std::string, std::string> range;
+    range.clear();
+    std::map<std::string, std::string>::iterator it;
+    for (size_t i = 0; i < grad.size(); ++ i)
+    {
+      auto lhs = main_stmt.as<Move>()->dst.as<Var>();
+      auto differential = Var::make(lhs->type(), "d" + lhs->name, lhs->args, lhs->shape);
+      auto rv = auto_differ(main_stmt, grad[i]);
+      std::map<std::string, std::string> crange = sprinter2.get(rv);
+      for (it = crange.begin(); it != crange.end(); it ++)
+        range[it->first] = it->second;
+    }
+
+
+    std::string ret = "(";
+    bool first = 1;
+    for (size_t i = 0; i < ins.size(); ++ i)
+    {
+      std::string name = ins[i];
+      if (range.find(name) == range.end()) continue;
+      std::string size = range[name];
+      if (!first)
+          ret += ", ";
+      //ret += "float ";
+      ret += type + " ";
+      first = 0;
+      if (size.length() == 0)
+          ret += "&" +name;
+      else
+          ret += "(&"+name+")"+size;
+    }
+    for (size_t i = 0; i < outs.size(); ++ i)
+    {
+      std::string name = "d"+outs[i];
+      if (range.find(name) == range.end()) continue;
+      std::string size = range[name];
+      if (!first)
+          ret += ", ";
+      //ret += "float ";
+      ret += type + " ";
+      first = 0;
+      if (size.length() == 0)
+          ret += "&" +name;
+      else
+          ret += "(&"+name+")"+size;   
+    }
+    for (size_t i = 0; i < grad.size(); ++ i)
+    {
+        std::string name = "d"+grad[i];
+        if (range.find(name) == range.end()) continue;
+        std::string size = range[name];
+        if (!first)
+            ret += ", ";
+        //ret += "float ";
+        ret += type + " ";
+        first = 0;
+        if (size.length() == 0)
+            ret += "&" +name;
+        else
+            ret += "(&"+name+")"+size;   
+    }
+    ret += ")";
+    return ret;
 }
