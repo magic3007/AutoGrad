@@ -25,7 +25,6 @@ SOFTWARE.
 #include "IndexAnalyst.h"
 #include "utils/aixlog.hpp"
 
-
 map<string, Expr> IndexAnalyst::operator()(const Stmt &stmt) {
   domains_.clear();
   index_types_.clear();
@@ -33,7 +32,7 @@ map<string, Expr> IndexAnalyst::operator()(const Stmt &stmt) {
   stmt.visit_stmt(this);
   map<string, Expr> rv{};
   Type index_t = Type::int_scalar(32);
-  for(auto &iter : domains_){
+  for (auto &iter : domains_) {
     auto index_name = iter.first;
     auto upper_bound = iter.second;
     auto index_type = index_types_[index_name];
@@ -52,20 +51,22 @@ void IndexAnalyst::visit(Ref<const Move> op) {
 }
 
 void IndexAnalyst::visit(Ref<const Var> op) {
-  for(size_t i = 0; i < op->args.size(); i++){
+  for (size_t i = 0; i < op->args.size(); i++) {
     op->args[i].visit_expr(this, op->shape[i]);
   }
 }
 
 void IndexAnalyst::visit(Ref<const Binary> op, int argu) {
   auto p = op->b.as<IntImm>();
-  if(p != nullptr){ // rhs is an integer immediate
-    if (op->op_type == BinaryOpType::Add){
-    argu -= p->value();
-    }else if (op->op_type == BinaryOpType::Mul){
+  if (p != nullptr) { // rhs is an integer immediate
+    if (op->op_type == BinaryOpType::Add) {
+      argu -= p->value();
+    } else if (op->op_type == BinaryOpType::Mul) {
       argu /= p->value();
-    }else if (op->op_type == BinaryOpType::IntDiv){
+    } else if (op->op_type == BinaryOpType::IntDiv) {
       argu *= p->value();
+    } else if (op->op_type == BinaryOpType::Mod) {
+      return;
     }
   }
   (op->a).visit_expr(this, argu);
@@ -74,15 +75,14 @@ void IndexAnalyst::visit(Ref<const Binary> op, int argu) {
 
 void IndexAnalyst::visit(Ref<const Var> op, int argu) {
   auto domain = domains_.find(op->name);
-  if(domain == domains_.end()){
-    if(is_rhs){
+  if (domain == domains_.end()) {
+    if (is_rhs) {
       index_types_[op->name] = IndexType::Reduce;
-    }else{
+    } else {
       index_types_[op->name] = IndexType::Spatial;
     }
     domains_[op->name] = argu;
-  }else{
+  } else {
     domains_[op->name] = std::min(domains_[op->name], argu);
   }
 }
-
