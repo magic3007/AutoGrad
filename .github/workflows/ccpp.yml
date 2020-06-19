@@ -26,4 +26,4 @@ jobs:
     - name: test
       run: cd build/test && ./gemm && ./conv2d
     - name: test2
-      run: cd build && ./project2/test2
+      run: cd build && ./project2/test2 
