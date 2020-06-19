@@ -29,6 +29,7 @@ SOFTWARE.
 #include "IndexAnalyst.h"
 #include "IRPrinter.h"
 #include "AutoDiffer.h"
+#include "IRcppPrinter.h"
 #include "utils/aixlog.hpp"
 
 
@@ -41,6 +42,7 @@ void foo(const string &text, const string &grad_to_str){
    IRPrinter printer;
    IndexAnalyst index_analyzer;
    IRPolisher polisher;
+   IRcppPrinter cpp_printer;
 
    auto main_stmt = parser::ParseFromString(text, 0).as<Kernel>()
         ->stmt_list[0];
@@ -58,6 +60,9 @@ void foo(const string &text, const string &grad_to_str){
    auto rv = auto_differ(main_stmt, grad_to_str);
 
    std::cout << printer.print(rv) << std::endl;
+
+   std::cout << "Generated C code : " << std::endl;
+   std::cout << cpp_printer.print(rv) << std::endl;
 }
 
 TEST(AutoDifferTest, Case1){
