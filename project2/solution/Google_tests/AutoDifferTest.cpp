@@ -51,6 +51,7 @@ void foo(const string &text, const string &grad_to_str){
 
    std::cout << "===============================" << std::endl;
    std::cout << text << std::endl;
+   printer.set_print_range(true);
    std::cout << printer.print(main_stmt) << std::endl;
    std::cout << "grad_to : " << grad_to_str << std::endl;
    std::cout << std::endl;
@@ -110,6 +111,12 @@ TEST(AutoDifferTest, Case6){
 TEST(AutoDifferTest, Case7){
   AixLog::Log::init<AixLog::SinkCout>(AixLog::Severity::trace, AixLog::Type::normal);
   string text = "B<16, 32>[i, j] = A<32, 16>[j, i];";
+  foo(text, "A");
+}
+
+TEST(AutoDifferTest, Case8){
+  AixLog::Log::init<AixLog::SinkCout>(AixLog::Severity::trace, AixLog::Type::normal);
+  string text = "B<32>[i] = A<2, 16>[i//16, i%16];";
   foo(text, "A");
 }
 

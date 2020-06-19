@@ -12,8 +12,8 @@
 #include "AutoDiffer.h"
 #include "IR.h"
 #include "IRPolisher.h"
-#include "IndexAnalyst.h"
 #include "IRcppPrinter.h"
+#include "IndexAnalyst.h"
 #include "utils/aixlog.hpp"
 
 using namespace Boost::Internal;
@@ -31,6 +31,7 @@ using json = nlohmann::json;
   X(case5)                                                                     \
   X(case6)                                                                     \
   X(case7)                                                                     \
+  X(case8)                                                                     \
   X(case9)                                                                     \
   X(case10)
 
@@ -44,7 +45,8 @@ Group foo(const string &text, const string &grad_to_str) {
   auto domains = index_analyzer(main_stmt);
   main_stmt = polisher(main_stmt, domains);
   auto lhs = main_stmt.as<Move>()->dst.as<Var>();
-  auto differential = Var::make(lhs->type(), "d" + lhs->name, lhs->args, lhs->shape);
+  auto differential =
+      Var::make(lhs->type(), "d" + lhs->name, lhs->args, lhs->shape);
   return auto_differ(main_stmt, grad_to_str);
 }
 
@@ -86,7 +88,7 @@ int main(int argc, char *argv[]) {
     auto grad_to = j["grad_to"];
     string body_stmt = "";
     IRcppPrinter printer;
-    for(const auto &grad : grad_to){
+    for (const auto &grad : grad_to) {
       auto rv = foo(text, grad);
       body_stmt += printer.print(rv);
     }
