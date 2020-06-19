@@ -1,8 +1,7 @@
 file(GLOB test_src "*.cc")
 file(GLOB kernel_src "./kernels/*.cc")
 file(GLOB solution_src
-        ./solution/solution2.cc
-        ./solution/signPrinter2.cc)
+        ./solution/solution2.cc)
 file(GLOB clean_src "./clean/*.cc")
 
 include_directories("../include")
@@ -15,7 +14,7 @@ target_include_directories(solution2 PRIVATE
         ./solutions/3rd
         ${PROJECT_SOURCE_DIR}/project1/solutions
         ${PROJECT_SOURCE_DIR}/project1/solutions/3rd)
-target_link_libraries(solution2 ${LIB_NAME} parser)
+target_link_libraries(solution2 ${LIB_NAME} parser autodiff)
 add_executable(cleanf2 ${clean_src})
 
 add_custom_target(solution_run2
