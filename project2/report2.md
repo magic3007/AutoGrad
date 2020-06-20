@@ -658,56 +658,6 @@ std::string generate_sign(const string &text, std::vector<std::string> grad, std
 }
 ```
 
-高斯消元法的实现在类`ImplGaussianEliminationMethod`中. 其运算过程基本是代数中的初等行变换操作, 与代数上的实现基本相同. 这里有一个小trick是, 为了不引入分数, 我们可以通过类似与辗转相除的方式进行消元, 其核心代码如下:
-```c++
-for(int i = 0; i < n_cols && current_row < n_rows; i++){
-    int non_zero_row_index = current_row;
-    for(int j = current_row; j < n_rows; j++) if(rows[j]->get(i) != 0)
-      { non_zero_row_index = j; break; }
-    if(non_zero_row_index != current_row){
-      std::swap(rows[current_row], rows[non_zero_row_index]);
-    }
-    if(rows[current_row]->get(i) == 0){
-      // independent_variable
-      is_independent_variable[i] = true;
-      continue;
-    }
-    last_main_col = i;
-    main_row[i] = current_row;
-    for(int j = current_row + 1; j < n_rows; j++){
-      while(rows[j]->get(i) != 0){
-        int32_t t = rows[j]->get(i) / rows[current_row]->get(i);
-        rows[j] = rows[j] - rows[current_row] * t;
-        if (rows[j]->get(i) != 0)
-          std::swap(rows[current_row], rows[j]);
-      }
-    }
-    ....
-```
-同理, 对于零行, 我们需要添加约束
-```c++
-  // zero row
-  for(int j = current_row; j < n_rows; j++){
-    auto compare_type = Type::int_scalar(32);
-    constraints.push_back(Compare::make(compare_type, CompareOpType::EQ,
-      rows[j]->rhs_, Expr(int32_t(0))));
-  }
-```
-
-对于出现的独立变量和自由变量, 我们不需要进行替换, 把其改成reduced index即可
-```c++
-for (int i = n_cols - 1; i >= 0 ; i--) {
-    if (is_independent_variable[i] || i > last_main_col) {
-      // independent variable or free variable
-      auto index = indexes[i].as<Index>();
-      auto index_type = Type::int_scalar(32);
-      solutions[index->name] = Index::make(index_type, index->name, index->dom, IndexType::Reduce);
-    } else {
-    ...
-```
-最后, 利用`IndexReplacer.cpp/h`进行下标变量的替换即可.
-
-
 ## Summary of Compilation Technology
 
 在这两个project中, 我们使用到的编译知识主要有
