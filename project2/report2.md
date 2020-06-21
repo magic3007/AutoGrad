@@ -6,7 +6,7 @@
 
 本次project在第一个project的基础上, 对通过Token Analysis和简单的Syntax Analysis得到的AST进行自动求导. 
 
-从理论上来讲, 本project实现的自动求导器可对任意线性下标的张量进行自动求导, 其使用的线性下标变换下求导方法主要基于[此篇论文](https://arxiv.org/abs/1711.01348), 主要的区别是在进行线性坐标变换的时我们使用了Gaussian Elimination 而不是 Smith Normalization.
+从理论上来讲, 本project实现的自动求导器可对任意线性下标的张量进行自动求导, 其使用的线性下标变换下求导方法主要基于[此篇论文](https://arxiv.org/abs/1711.01348), 主要的区别是在进行线性坐标变换的时候我们使用了Gaussian Elimination 而不是 Smith Normalization.
 
 ### Usage
 
@@ -91,8 +91,8 @@ l
 我们先来看一个不带下标, 仅仅进行<u>符号求导</u>的例子, 以$C=\frac{x}{x+y}$为例.
 求导的方法是, 针对每个等式右边出现的被求导变量, 把其他的被求导变量视为常量, 然后进行求导. 比如在$C=\frac{x}{x+y}$中对$x$进行求导, 我们将得到两个部分:
 
-- 只针对分子中出现的$x$,  把分母中出现的$x$进行视为常量,得到 $\frac{dC}{x+y}$
-- 只针对分母中出现的$x$,  把分子中出现的$x$进行视为常量,得到 $\frac{xdC}{-(x+y)^2}$
+- 只针对分子中出现的$x$,  把分母中出现的$x$视为常量,得到 $\frac{dC}{x+y}$
+- 只针对分母中出现的$x$,  把分子中出现的$x$视为常量,得到 $\frac{xdC}{-(x+y)^2}$
 
 把这两部分相加, 我们得到
 $$
@@ -196,9 +196,9 @@ dA<8,10>[z_0,z_1] &= Select(0 \leq z_0 < 8 \&\& 0 \leq z_1 < 8, dB<8,8>[z_0,z_1]
 dA<8,10>[z_0,z_1] &= Select(0 \leq z_0 < 8 \&\& 0 \leq z_1-2 < 8, dB<8,8>[z_0,z_1-2] * A<8,10>[z_0,z_1-2],0)
 \end{align}
 $$
-在上面的下标变换中, 其实在在解线性方程组, 我们使用了高斯消元法实现. 上述的$z0$和$z1$在求导表达式中为spacial index; 当然, 在高斯消元法的过程中, 会出现*自由变量*和*独立变量*的概念, 显然这些下标变量无需替换, 只需要变为reduced变量即可. 关于*自由变量*和*独立变量*属于代数内容, 这里不再详细展开.
+在上面的下标变换中, 其实是在解线性方程组, 我们使用了高斯消元法实现. 上述的$z0$和$z1$在求导表达式中为spacial index; 当然, 在高斯消元法的过程中, 会出现*自由变量*和*独立变量*的概念, 显然这些下标变量无需替换, 只需要变为reduced变量即可. 关于*自由变量*和*独立变量*属于代数内容, 这里不再详细展开.
 
-### Brief Summay
+### Brief Summary
 
 不妨设被求导变量为$B$, 其有$t$个维度. 经过上面分析, 我们知道, 最终的结果一定可以表示成若干个如下的loopnest statement:
 $$
@@ -235,16 +235,30 @@ $$
 
 ### Chain Rule on AST
 
-以`A<8, 8>[i, j] = (B<10, 8>[i, j] + B<10, 8>[i + 1, j] + B<10, 8>[i + 2, j]) / 3.0`对$B$求导为例。语法树的根节点为$/$，设其左右子树分别为$f$和$g$。访问根节点时带参数$dA$，当访问左子树时，根据链法则，
-$$df=\frac{\partial l}{\partial A}\cdot\frac{\partial A}{\partial f}=dA\cdot\frac{\partial \frac{f}{g}}{\partial f}=\frac{dA}{g}=\frac{dA}{3}$$
-因此访问左子树的根节点$+$时带参数$\frac{dA}{3}$。类似地，当访问$+$的右子树（设为$f_2$，左子树为$f_1$）时，
-$$df_2=\frac{\partial l}{\partial f}\cdot\frac{\partial f}{\partial f_2}=df\cdot\frac{\partial(f_1+f_2)}{\partial f_2}=df$$
+以`A<8, 8>[i, j] = (B<10, 8>[i, j] + B<10, 8>[i + 1, j] + B<10, 8>[i + 2, j]) / 3.0`对$B$求导为例。语法树的根节点为$/$，设其左右子树分别为$f$和$g$, 即$A=\frac{f}{g}$. 访问根节点时带参数$dA$，当访问左子树时，根据链法则，
+$$
+df=\frac{\partial l}{\partial A}\cdot\frac{\partial A}{\partial f}=\frac{dA}{g}=\frac{dA}{3}
+$$
+因此访问左子树的根节点$+$时带参数$\frac{dA}{3}$. 
+
+类似, 当访问右子树的时候, 我们同样可以根据链式法则求微分:
+$$
+dg=\frac{\partial l}{\partial A}\cdot\frac{\partial A}{\partial g}=dA\frac{f}{-g^2}=-\frac{B<10, 8>[i, j] + B<10, 8>[i + 1, j] + B<10, 8>[i + 2, j]}{-9}dA
+$$
+因此访问左子树的根节点$+$时带参数$\frac{B<10, 8>[i, j] + B<10, 8>[i + 1, j] + B<10, 8>[i + 2, j]}{-9}dA$. 
+
+接下来递归访问, 当访问$+$的右子树（设为$f_2$，左子树为$f_1$）时，
+$$
+df_2=\frac{\partial l}{\partial f}\cdot\frac{\partial f}{\partial f_2}=df\cdot\frac{\partial(f_1+f_2)}{\partial f_2}=df
+$$
 访问参数不变，仍为$df=\frac{dA}{3}$。
 
 ### Gaussian Elimination For Linear index Transform
 
 承上一小节，当访问到$f_2$时，
-$$dB=\frac{\partial l}{\partial f_2}\cdot\frac{\partial f_2}{\partial B}=df_2\cdot\frac{\partial B<i+2,j>}{\partial B}=\frac{dA}{3}<z_0,z_1>$$
+$$
+dB=\frac{\partial l}{\partial f_2}\cdot\frac{\partial f_2}{\partial B}=df_2\cdot\frac{\partial B<i+2,j>}{\partial B}=\frac{dA}{3}<z_0,z_1>
+$$
 根据下标关系，可列出方程
 $$
 \begin{bmatrix}1&0\\0&1\end{bmatrix}
@@ -252,7 +266,9 @@ $$
 \begin{bmatrix}i+2\\j\end{bmatrix}
 $$
 可用高斯消元法解线性方程组，解为$z_0=i-2,z_1=j$。因此
-$$dB=\frac{dA<i-2,j>}{3}$$
+$$
+dB=\frac{dA<i-2,j>}{3}
+$$
 
 ## How to Implement Automatic Derivation?
 
@@ -423,7 +439,7 @@ class Matrix{
 };
 ```
 
-高斯消元法的实现在类`ImplGaussianEliminationMethod`中. 其运算过程基本是代数中的初等行变换操作, 与代数上的实现基本相同. 这里有一个小trick是, 为了不引入分数, 我们可以通过类似与**辗转相除法**类似的方式进行消元, 其核心代码如下:
+高斯消元法的实现在类`ImplGaussianEliminationMethod`中. 其运算过程基本是代数中的初等行变换操作, 与代数上的实现基本相同. 这里有一个小trick是, 为了不引入分数, 我们可以通过与**辗转相除法**类似的方式进行消元, 其核心代码如下:
 ```c++
 for(int i = 0; i < n_cols && current_row < n_rows; i++){
     int non_zero_row_index = current_row;
@@ -516,11 +532,11 @@ void IRcppPrinter::visit(Ref<const LoopNest> op) {
   }
 }
 ```
-实例化一个该类变量，然后对自动求导后获得的AST进行依次遍历即可获得翻译的Cpp代码。
+实例化一个该类变量，然后对自动求导后获得的AST进行一次遍历即可获得翻译的Cpp代码。
 
 ### Function Signature
 
-函数签名中传入的参数，都是求导表达式中用到的变量，因此实现中是通过对中间代码的解析来生成函数签名。
+函数签名中传入的参数，都是求导表达式中用到的变量，因此实现中通过对中间代码的解析来生成函数签名。
 
 具体来说，实现了继承自类IRPrinter的类signPrinter2。
 
